@@ -1,0 +1,878 @@
+type: edu
+custom_name: stage2
+files:
+- name: test/SimpleBankSystemTest.java
+  visible: false
+  text: |
+    import banking.Main;
+    import org.hyperskill.hstest.stage.StageTest;
+    import org.hyperskill.hstest.testcase.CheckResult;
+    import org.hyperskill.hstest.testcase.TestCase;
+
+    import java.util.List;
+    import java.util.Random;
+    import java.util.regex.Matcher;
+    import java.util.regex.Pattern;
+
+
+    public class SimpleBankSystemTest extends StageTest {
+
+
+        public SimpleBankSystemTest() {
+            super(Main.class);
+        }
+
+        private static String correctCardNumber = "";
+        private static String correctPin = "";
+        private static String incorrectCardNumber = "";
+        private static String incorrectPin = "";
+        private static boolean isCompleted = false;
+
+        @Override
+        public List<TestCase> generate() {
+            return List.of(
+                    //Проверка на правильный вывод информации о созданной карте
+                    new TestCase()
+                            .setInput("1")
+                            .addInput(output -> {
+
+                                String out = output.toString().trim().toLowerCase();
+
+                                Pattern cardNumberPattern = Pattern.compile("400000\\d{10}");
+                                Matcher cardNumberMatcher = cardNumberPattern.matcher(out);
+
+                                if (!cardNumberMatcher.find()) {
+                                    return new CheckResult(false, "You are printing the card number " +
+                                            "incorrectly. The card number should look like in the example: " +
+                                            "400000DDDDDDDDDD, where D is a digit.");
+                                }
+
+                                Pattern pinPattern = Pattern.compile("^\\d{4}$", Pattern.MULTILINE);
+                                Matcher pinMatcher = pinPattern.matcher(out);
+
+                                if (!pinMatcher.find()) {
+                                    return new CheckResult(false, "You are printing the card PIN " +
+                                            "incorrectly. The PIN should look like in the example: DDDD, where D is " +
+                                            "a digit.");
+                                }
+                                correctPin = pinMatcher.group().trim();
+                                correctCardNumber = cardNumberMatcher.group();
+
+                                return "1";
+                            })
+                            .addInput(output -> {
+
+                                String out = output.toString().trim().toLowerCase();
+
+                                Pattern cardNumberPattern = Pattern.compile("400000\\d{10}");
+                                Matcher cardNumberMatcher = cardNumberPattern.matcher(out);
+
+                                if (!cardNumberMatcher.find()) {
+                                    return new CheckResult(false, "You are printing the card number " +
+                                            "incorrectly. The card number should look like in the example: " +
+                                            "400000DDDDDDDDDD, where D is a digit.");
+                                }
+
+                                Pattern pinPattern = Pattern.compile("^\\d{4}$", Pattern.MULTILINE);
+                                Matcher pinMatcher = pinPattern.matcher(out);
+
+                                if (!pinMatcher.find()) {
+                                    return new CheckResult(false, "You are printing the card PIN " +
+                                            "incorrectly. The PIN should look like in the example: DDDD, where D is " +
+                                            "a digit.");
+                                }
+
+                                String anotherCardNumber = cardNumberMatcher.group();
+
+                                if (anotherCardNumber.equals(correctCardNumber)) {
+                                    return new CheckResult(false, "Your program generates two identical card numbers!");
+                                }
+
+                                isCompleted = true;
+                                return "0";
+                            }),
+    //                //Проверка авторизации и log out
+                    new TestCase()
+                            .setInput("1")
+                            .addInput(output -> {
+                                String out = output.toString().trim().toLowerCase();
+
+                                Pattern cardNumberPattern = Pattern.compile("400000\\d{10}");
+                                Matcher cardNumberMatcher = cardNumberPattern.matcher(out);
+
+                                if (!cardNumberMatcher.find()) {
+                                    return new CheckResult(false, "You are printing the card number " +
+                                            "incorrectly. The card number should look like in the example: " +
+                                            "400000DDDDDDDDDD, where D is a digit.");
+                                }
+
+                                Pattern pinPattern = Pattern.compile("^\\d{4}$", Pattern.MULTILINE);
+                                Matcher pinMatcher = pinPattern.matcher(out);
+
+                                if (!pinMatcher.find()) {
+                                    return new CheckResult(false, "You are printing the card PIN " +
+                                            "incorrectly. The PIN should look like in the example: DDDD, where D is " +
+                                            "a digit.");
+                                }
+                                correctPin = pinMatcher.group().trim();
+                                correctCardNumber = cardNumberMatcher.group();
+
+                                return "2";
+                            })
+                            .addInput(output -> correctCardNumber + "\n" + correctPin)
+                            .addInput(output -> {
+
+                                if (!output.toString().toLowerCase().contains("successfully")) {
+                                    return new CheckResult(false, "The user should be signed in after " +
+                                            "entering the correct card information.");
+                                }
+
+                                return "2";
+                            })
+                            .addInput(output -> {
+
+                                if (!output.toString().toLowerCase().contains("create an account")) {
+                                    return new CheckResult(false, "The user should be logged out after choosing 'Log out' option");
+                                }
+
+                                isCompleted = true;
+                                return "0";
+                            }),
+                    //Проверка авторизации с неправильным пинкодом
+                    new TestCase()
+                            .setInput("1")
+                            .addInput(output -> {
+                                String out = output.toString().trim().toLowerCase();
+
+                                Pattern cardNumberPattern = Pattern.compile("400000\\d{10}");
+                                Matcher cardNumberMatcher = cardNumberPattern.matcher(out);
+
+                                Pattern pinPattern = Pattern.compile("^\\d{4}$", Pattern.MULTILINE);
+                                Matcher pinMatcher = pinPattern.matcher(out);
+
+                                if (!cardNumberMatcher.find() || !pinMatcher.find()) {
+                                    return new CheckResult(false, "You should output card number and PIN like in example!");
+                                }
+
+                                correctCardNumber = cardNumberMatcher.group();
+                                correctPin = pinMatcher.group();
+
+                                Random random = new Random();
+
+                                incorrectPin = correctPin;
+
+                                while (correctPin.equals(incorrectPin)) {
+                                    incorrectPin = String.valueOf(1000 + random.nextInt(8999));
+                                }
+
+                                return "2";
+                            })
+                            .addInput(output -> correctCardNumber + "\n" + incorrectPin)
+                            .addInput(output -> {
+
+                                if (output.toString().toLowerCase().contains("successfully")) {
+                                    return new CheckResult(false, "The user should not be signed in after" +
+                                            " entering incorrect card information.");
+                                }
+
+                                isCompleted = true;
+                                return "0";
+                            }),
+                    //Проверка авторизации для несуществующего акканута
+                    new TestCase()
+                            .setInput("1")
+                            .addInput(output -> {
+                                String out = output.toString().trim().toLowerCase();
+
+                                Pattern cardNumberPattern = Pattern.compile("400000\\d{10}");
+                                Matcher cardNumberMatcher = cardNumberPattern.matcher(out);
+
+                                Pattern pinPattern = Pattern.compile("^\\d{4}$", Pattern.MULTILINE);
+                                Matcher pinMatcher = pinPattern.matcher(out);
+
+                                if (!cardNumberMatcher.find() || !pinMatcher.find()) {
+                                    return new CheckResult(false, "You should output card number " +
+                                            "and PIN like in example");
+                                }
+
+                                correctPin = pinMatcher.group().trim();
+                                correctCardNumber = cardNumberMatcher.group();
+
+                                Random random = new Random();
+
+                                incorrectCardNumber = correctCardNumber;
+
+                                while (correctCardNumber.equals(incorrectCardNumber)) {
+                                    incorrectCardNumber = "400000" + (1_000_000_00 + random.nextInt(8_000_000_00));
+                                }
+
+                                return "2";
+                            })
+                            .addInput(output -> incorrectCardNumber + "\n" + correctPin)
+                            .addInput(output -> {
+
+                                if (output.toString().toLowerCase().contains("successfully")) {
+                                    return new CheckResult(false, "The user should not be signed" +
+                                            " in after entering the information of a non-existing card.");
+                                }
+
+                                isCompleted = true;
+                                return "0";
+                            }),
+
+                    // Проверка баланса
+                    new TestCase()
+                            .setInput("1")
+                            .addInput(output -> {
+                                String out = output.toString().trim().toLowerCase();
+
+                                Pattern cardNumberPattern = Pattern.compile("400000\\d{10}");
+                                Matcher cardNumberMatcher = cardNumberPattern.matcher(out);
+
+                                Pattern pinPattern = Pattern.compile("^\\d{4}$", Pattern.MULTILINE);
+                                Matcher pinMatcher = pinPattern.matcher(out);
+
+                                if (!cardNumberMatcher.find() || !pinMatcher.find()) {
+                                    return new CheckResult(false, "You should output card number and PIN like in example");
+                                }
+
+                                correctPin = pinMatcher.group().trim();
+                                correctCardNumber = cardNumberMatcher.group();
+
+                                return "2";
+                            })
+                            .addInput(output -> correctCardNumber + "\n" + correctPin)
+                            .addInput(output -> "1")
+                            .addInput(output -> {
+                                if (!output.toString().contains("0")) {
+                                    return new CheckResult(false, "Expected balance: 0");
+                                }
+
+                                isCompleted = true;
+                                return "0";
+                            }),
+                    //Проверка номера карты по алгоритму Луна
+                    new TestCase()
+                            .setInput("1")
+                            .addInput(output -> {
+                                String out = output.toString().trim().toLowerCase();
+
+                                Pattern cardNumberPattern = Pattern.compile("400000\\d{10}");
+                                Matcher cardNumberMatcher = cardNumberPattern.matcher(out);
+
+                                if (!cardNumberMatcher.find()) {
+                                    return new CheckResult(false, "You should output card number and PIN like in example");
+                                }
+
+                                String cardNumber = cardNumberMatcher.group();
+
+                                if (!checkLuhnAlgorithm(cardNumber)) {
+                                    return new CheckResult(false, "The card number doesn’t pass the Luhn algorithm.");
+                                }
+
+                                return "1";
+                            })
+                            .addInput(output -> {
+                                String out = output.toString().trim().toLowerCase();
+
+                                Pattern cardNumberPattern = Pattern.compile("400000\\d{10}");
+                                Matcher cardNumberMatcher = cardNumberPattern.matcher(out);
+
+                                if (!cardNumberMatcher.find()) {
+                                    return new CheckResult(false, "You should output card number and PIN like in example");
+                                }
+
+                                String cardNumber = cardNumberMatcher.group();
+
+                                if (!checkLuhnAlgorithm(cardNumber)) {
+                                    return new CheckResult(false, "The card number doesn’t pass the Luhn algorithm.");
+                                }
+
+                                return "1";
+                            })
+                            .addInput(output -> {
+                                String out = output.toString().trim().toLowerCase();
+
+                                Pattern cardNumberPattern = Pattern.compile("400000\\d{10}");
+                                Matcher cardNumberMatcher = cardNumberPattern.matcher(out);
+
+                                if (!cardNumberMatcher.find()) {
+                                    return new CheckResult(false, "You should output card number and PIN like in example");
+                                }
+
+                                String cardNumber = cardNumberMatcher.group();
+
+                                if (!checkLuhnAlgorithm(cardNumber)) {
+                                    return new CheckResult(false, "The card number doesn’t pass the Luhn algorithm.");
+                                }
+
+
+                                return "1";
+                            })
+                            .addInput(output -> {
+                                isCompleted = true;
+                                return "0";
+                            })
+            );
+        }
+
+        @Override
+        public CheckResult check(String reply, Object attach) {
+            if (!isCompleted)
+                return new CheckResult(false, "Looks like your program unexpectedly terminated without choosing 'exit' item");
+            else
+                isCompleted = false;
+            return CheckResult.correct();
+        }
+
+        //Возвращает true, если проверка пройдена. Иначе false
+        private boolean checkLuhnAlgorithm(String cardNumber) {
+            int result = 0;
+            for (int i = 0; i < cardNumber.length(); i++) {
+                int digit = Character.getNumericValue(cardNumber.charAt(i));
+                if (i % 2 == 0) {
+                    int doubleDigit = digit * 2 > 9 ? digit * 2 - 9 : digit * 2;
+                    result += doubleDigit;
+                    continue;
+                }
+                result += digit;
+            }
+            return result % 10 == 0;
+        }
+    }
+  learner_created: false
+- name: src/banking/Main.java
+  visible: true
+  text: |
+    package banking;
+
+    /*
+     * JBA - JetBrains Academy
+     * project: 'simple banking system'
+     * www: https://hyperskill.org/projects/93?goal=7
+     *
+     * 2020-06-06 - starting project / stage #1 'card anatomy'
+     *
+     * stage #1 "card anatomy"
+     *      www: https://hyperskill.org/projects/93/stages/515/implement
+     *      goal of the stage: create account / login to account / check balance
+     */
+
+
+    import java.util.ArrayList;
+    import java.util.HashMap;
+    import java.util.Map;
+    import java.util.Scanner;
+
+
+    public class Main implements AppConst {
+
+        // variables regarding processing console operations - user inputs / outputs
+        static Scanner sc = new Scanner(System.in);
+        static String action = "";
+        static String subAction = ""; // submenu action
+        static ArrayList<String> log = new ArrayList<>();
+
+        static Map<String, Account> accounts = new HashMap<>();
+        static String currAccNo = "";
+
+        static APP_STATES state = APP_STATES.MAIN_LOOP;
+
+        public static void main(String[] args) {
+
+            do { // begin of main application loop
+
+                printAndLog(MAIN_MENU_STR, DO_LOG);
+                action = readAndLog(DO_LOG).toUpperCase();
+
+                switch (action) { // begin of 'main menu' switch
+
+                    case "1": // create account
+                        processAccCreate();
+                        break; // end of "1" - create account
+
+                    case "2": // log into account
+                        currAccNo = processAccLogin();
+                        if (currAccNo != null) {
+                            // when successfully logged into account
+                            // process account operations
+                            state = APP_STATES.LOGGED_IN;
+
+                            do { // begin of 'logged into account' loop
+
+                                printAndLog(ACC_SUBMENU_STR, DO_LOG);
+                                subAction = readAndLog(DO_LOG);
+
+                                switch (subAction) { // being of 'logged into account' switch
+                                    case "0": // exit
+                                        state = APP_STATES.ON_EXIT;
+                                        break;
+
+                                    case "1": // balance
+                                        processBalance(currAccNo);
+                                        break;
+
+                                    case "2": // logout - intentionally no break
+                                    default: // 'unknown command' - the same as 'logout'
+                                        currAccNo = "";
+                                        printAndLog("\nYou have successfully logged out!", DO_LOG);
+                                        state = APP_STATES.MAIN_LOOP;
+
+                                } // end of 'logged into account' submenu switch
+
+                            } while (state == APP_STATES.LOGGED_IN);
+                            // end of 'logged into account' loop
+                        } // if(currAccNo != null)
+                        break; // end of "2" - login into account
+
+                    case "IMPORT":
+    //                    processImport();
+                        break; // end of "IMPORT"
+
+                    case "EXPORT":
+    //                    processExport();
+                        break; // end of "EXPORT"
+
+                    case "LIST": // list all accounts stored / remembered
+                        processAccList();
+                        break; // end of "LIST"
+
+                    case "LOG":
+    //                    processLog();
+                        break; // end of "LOG"
+
+                    case "RESET STATS":
+    //                    processResetStats();
+                        break; // end of "RESET STATS"
+
+                    case "0": // exit
+                        printAndLog("Bye!", DO_LOG);
+                        state = APP_STATES.ON_EXIT;
+                        break; // leave the program :)
+
+                    default:
+                        if (DEBUG_LVL > 0) {
+                            printAndLog("I'm so sorry - I don't understand your command: "
+                                    + MSG_DELIM + action + MSG_DELIM, DO_LOG);
+                        }
+                        // end of "DEFAULT"
+
+                } // end of 'main menu' switch
+
+            } while (state != APP_STATES.ON_EXIT);
+            // end of main application loop
+
+        } // psv main()
+
+
+        // creates new account and puts it into 'accounts' map
+        // prints it's 'full number' and 'pin' value
+        //
+        private static void processAccCreate() {
+
+            Account newAcc = new Account();
+            accounts.put(newAcc.getFullNoAsString(), newAcc);
+
+            printAndLog("\nYour card has been created\nYour card number:", DO_LOG);
+            printAndLog(newAcc.getFullNoAsString(), DO_LOG);
+            printAndLog("Your card PIN:", DO_LOG);
+            printAndLog(newAcc.getPinAsString(), DO_LOG);
+        } // private static void processAccCreate()
+
+
+        // asks the user for the account / card number and pin
+        // and check if the account with that number and pin do exist
+        // returns:
+        //   on 'successful login': String representing 16-digit 'long number' of account you are 'logged into'
+        //   on 'login failed': 'null'
+        //
+        private static String processAccLogin() {
+            printAndLog("\nEnter your card number:", DO_LOG);
+            String no = readAndLog(DO_LOG);
+            printAndLog("Enter your PIN:", DO_LOG);
+            String pin = readAndLog(DO_LOG);
+
+            if (no == null || pin == null || "null".equals(no) || "null".equals(pin)) {
+                printAndLog("\nWrong card number or PIN!", DO_LOG);
+                return null;
+            }
+
+            if (!accounts.containsKey(no)) {
+                printAndLog("\nWrong card number or PIN!", DO_LOG);
+                return null;
+            }
+
+            if (!accounts.get(no).getPinAsString().equals(pin)) {
+                printAndLog("\nWrong card number or PIN!", DO_LOG);
+                return null;
+            }
+
+            printAndLog("\nYou have successfully logged in!", DO_LOG);
+            return no;
+        } // private static void processAccLogin()
+
+
+        private static void processBalance(String acc) {
+            if (acc == null || "null".equals(acc) || "".equals(acc))
+                return;
+            if (!accounts.containsKey(acc))
+                return;
+
+            printAndLog("\nBalance: " + accounts.get(acc).getBalance(), DO_LOG);
+        } // private static void processBalance()
+
+        // list all created / remembered accounts
+        //
+        private static void processAccList() {
+            for (Account acc : accounts.values()) {
+                printAndLog(acc.toString(), DO_LOG);
+            }
+        } // private static void processAccList() {
+
+
+        // uses global symbols:
+        // Scanner sc - scanner from System.in
+        // ArrayList<String> log - array to log input and outputs
+        // parameter:
+        // Boolean doLog - if 'true' logs returned strings (read from System.in) to 'ArrayList<String> log' too
+        // because 'doLog' is a method's parameter, one can turn on/off logging of every individual method's calls
+        //
+        private static String readAndLog(Boolean doLog) {
+            String s = sc.nextLine().strip();
+            if (doLog) log.add(s);
+            return s;
+        } // private static String readLineWithLog()
+
+
+        // uses global symbols:
+        // ArrayList<String> log - array to log input and outputs
+        // parameters:
+        //  - s - string to print and (optionally) log
+        //  - doLog - if 'true' logs returned strings (read from System.in) to 'ArrayList<String> log' too
+        // because 'doLog' is a method's parameter, one can turn on/off logging of every individual method's calls
+        //
+        private static void printAndLog(String s, Boolean doLog) {
+            System.out.println(s);
+            if (doLog) log.add(s);
+        } // private static void printLineWithLog()
+
+    } // class BankSystem
+  learner_created: true
+- name: src/banking/APP_STATES.java
+  visible: true
+  text: |
+    package banking;
+
+    public enum APP_STATES {
+        MAIN_LOOP, LOGGED_IN, ON_EXIT
+    }
+  learner_created: true
+- name: src/banking/Account.java
+  visible: true
+  text: |
+    package banking;
+
+    import java.util.HashSet;
+    import java.util.Random;
+    import java.util.Set;
+
+    public class Account implements AccConst {
+
+        // task description depicts the full account / card number
+        // should have 16 characters (digits in fact), including:
+        //  6 digits (=400000 right now) - IIN_STR - issuer identification number
+        //  9 digits - CAN - customer account number
+        //  1 digit - checksum - may be any right now
+        // because Integer data type covers more then 9 digits,
+        // I choose that type for account number (it may be changed in the future)
+        // it is fast and easy to maintain...
+        // CAUTION:
+        // 'full' account number (of 16 digits length) can be stored as 'long'
+        // but I'll use its 'String' representation only
+        // the 'account number' is set once per it's lifetime
+
+        private final int can;
+
+
+        // checksum digit - in fact it should be generated rather then stored
+        // but at the stage #1 of the project it can be anything
+        // so it is easier to store some random 1-digit value.
+        // the 'account number checksum' is given once per it's lifetime
+
+        private final int cs;
+
+
+        // four-digit number
+        // pin is NOT final - it can be changed by user in the future!!!
+
+        private int pin;
+
+
+        // how much money the account holds
+
+        private int balance;
+
+
+        // internal variable used by Account() constructor
+        private static final Random rnd = new Random();
+
+
+        // we have to create unique account / card number for every new user
+        // so we have to remember already issued one's
+
+        private static final Set<Integer> alreadyGeneratedCanNumbers = new HashSet<>();
+
+
+        Account() {
+            int pretendingNumber;
+
+            // let's generate unique (not generated / remembered yet) 'can' (customer account number)
+            // meeting the criteria - it has to be integer in the range:
+            // ACC_NO_MIN_BOUND..ACC_NO_MAX_BOUND (min inclusive, max exclusive)
+
+            do {
+                pretendingNumber = rnd.nextInt(ACC_NO_MAX_BOUND - ACC_NO_MIN_BOUND) + ACC_NO_MIN_BOUND;
+            } while (alreadyGeneratedCanNumbers.contains(pretendingNumber));
+
+            this.can = pretendingNumber;
+            alreadyGeneratedCanNumbers.add(pretendingNumber);
+
+            // the pin doesn't have to be unique
+            this.pin = rnd.nextInt(PIN_NO_MAX_BOUND - PIN_NO_MIN_BOUND) + PIN_NO_MIN_BOUND;
+
+            // initial account balance
+            this.balance = 0;
+
+            // cs is 1-digit number - at the stage #1 of the project it can have any 1-digit value
+            this.cs = rnd.nextInt((int) Math.pow(10, ACC_CHECKSUM_LEN));
+        } // Account() constructor
+
+
+        // get Customer Account Number as 'int'
+        int getCanAsNumber() {
+            return can;
+        }
+
+
+        // get Customer Account Number as 'String'
+        // returns zero-left-padding String of ACC_CAN_LEN
+        // representing the CAN part of account / cart number
+        String getCanAsString() {
+            return String.format("%0" + ACC_CAN_LEN + "d", can);
+        }
+
+
+        // returns String representing 16-digit 'full account number'
+        String getFullNoAsString() {
+            return String.format(ACC_FULL_NO_2ARG_FORMAT_STRING, can, cs);
+        }
+
+
+        public int getPinAsNumber() {
+            return pin;
+        }
+
+
+        public String getPinAsString() {
+            return String.format("%0" + PIN_LEN + "d", pin);
+        }
+
+
+        // updates pin with given int value
+        // returns:
+        //  true - if pin was successfully updated
+        //  false - if given value doesn't satisfy pin-related requirements
+        //      (eg is < PIN_NO_MIN_BOUND or >= PIN_NO_MAX_BOUND)
+        //      in that case the pin number is NOT updated
+        // this method is not named 'setPin', because it has the return value...
+        // and therefore is not 'proper setter' according to 'java beans convention'
+        public boolean updatePin(int newPinAsInt) {
+            if (newPinAsInt >= PIN_NO_MIN_BOUND && newPinAsInt < PIN_NO_MIN_BOUND) {
+                pin = newPinAsInt;
+                return true;
+            } else {
+                return false;
+            }
+        } // public boolean updatePin(int)
+
+
+        // updates pin with given String
+        // returns:
+        //   true - if pin was successfully updated
+        //   false - if given 'newPinAsString' doesn't satisfy pin-related requirements:
+        //      - it has to have 4-digits (no other characters / symbols)
+        //      - it's integer representation has to be in the range:
+        //      PIN_NO_MIN_BOUND..PIN_NO_MAX_BOUND (min inclusive, max exclusive)
+        //   in that case the pin number is NOT updated
+        // this method is not named 'setPin', because it has the return value...
+        // and therefore is not 'proper setter' according to 'java beans convention'
+        public boolean updatePin(String newPinAsString) {
+            if (newPinAsString == null || !newPinAsString.matches("^\\d{" + PIN_LEN + "}$")) {
+                return false;
+            }
+            return updatePin(Integer.parseInt(newPinAsString));
+        } // public boolean updatePin(String)
+
+
+        public int getBalance() {
+            return balance;
+        }
+
+
+        public void setBalance(int newBalance) {
+            this.balance = newBalance;
+        }
+
+
+        // updates balance by given value (maybe 'in +' or 'in -')
+        // returns new balance value
+        public int updateBalanceBy(int changeBy) {
+            this.balance += changeBy;
+            return this.balance;
+        }
+
+
+        public String toString() {
+            return "Account{no=" + getFullNoAsString() + ", pin=" + getPinAsString() + ", balance=" + balance + "}";
+        }
+
+    } // class Account
+  learner_created: true
+- name: src/banking/Constants.java
+  visible: true
+  text: |
+    package banking;
+
+    interface AccConst { // account related constants
+
+        // the length of the whole card / account number
+        // according to task description it has to have 16 digits
+
+        int ACC_FULL_NUMBER_LEN = 16;
+
+        // it consists of 3 parts:
+        // IIN_STR - issuer identification number - 6 digits
+        // CAN - customer account number - 9..12 digits - here: 9 digits
+        // CS - checksum - 1 digit
+
+
+        // Issuer Identification Number
+        // prefix of every account number generated by our 'bank'
+        // example values: '4*****' - Visa, '34****' or '37****' - AmEx,
+        // '51****'..'55****' - MasterCard etc...
+        // here - equals '400000' - according to the task description
+
+        String IIN_STR = "400000";
+        int ACC_IIN_LEN = IIN_STR.length(); // has to be = 6;
+
+
+        // Customer Account Number Length - CAN itself has to be unique
+        // according to task description the  whole card number has to have 16 digits
+        // including 6-digit IIN_STR and 1 digit 'checksum'
+        // therefore CAN length is always 9 digits here
+
+        int ACC_CHECKSUM_LEN = 1; // checksum is one-digit number
+        int ACC_CAN_LEN = ACC_FULL_NUMBER_LEN - ACC_IIN_LEN - ACC_CHECKSUM_LEN; // = 9
+
+
+        // used eg. in String.format() method requires 2 args to work:
+        // the 'int can' number (individual customer account number
+        // and 'int cs' (checksum number)
+        // should generate output String representing 16-digit 'full account number'
+
+        String ACC_FULL_NO_2ARG_FORMAT_STRING = IIN_STR + "%0" + ACC_CAN_LEN + "d%0" + ACC_CHECKSUM_LEN + "d";
+
+        // some 'silent assumptions' has been made:
+        // the length of IIN_STR, PIN and CHECKSUM numbers will not exceed 9 digits (6 in fact),
+        // therefore the 'Integer' type will be sufficient for their numerical representations
+
+        // ACC_FULL_NUMBER with it's length of 16 digits will have 'String' representation ONLY
+        // but
+        // ACC_CAN (customer account number), which length can be in the range of 9..12 digits (inclusive)
+        // in some cases it may be of the "Integer" type and in the others of the "Long" type
+
+        // the task description suggests the whole card number should have 16 digits
+        // therefore the CAN part should have 9 digits: 16 - 6 (IIS_LEN) - 1 (CHECKSUM_LEN)
+        // thus I'll use 'Integer' as a data type for individual CAN number
+        // (yes, I do miss C/C++ typedef here...)
+
+
+        // min number that can be assigned to the account (inclusive)
+        // we do suppress creating accounts with number '0' (zero)
+
+        int ACC_NO_MIN_BOUND = 1;
+
+
+        // max value that can be assigned to the account number (exclusive)
+        // because the longest account number has 9 digits (see above)
+        // thus max acc bound is < 10^ACC_CAN_LEN
+
+        int ACC_NO_MAX_BOUND = (int) Math.pow(10, ACC_CAN_LEN);
+
+
+        // the length (in digits) of 'PIN' number
+
+        int PIN_LEN = 4;
+
+
+        // value inclusive - just like for the account number
+        // we don't allow to create pin numbers with '0' (zero) value
+
+        int PIN_NO_MIN_BOUND = 1;
+
+
+        // max pin bound (exclusive)
+
+        int PIN_NO_MAX_BOUND = (int) Math.pow(10, PIN_LEN);
+
+    } // interface AccConst
+
+
+    interface AppConst { // application related constants
+
+        // the higher DEBUG_LVL is
+        // the more verbose this application is
+        // DEBUG_LVL == 0 means 'no debug info'
+
+        int DEBUG_LVL = 0;
+
+
+        // when 'true' every console input and output is recorded into:
+        // static ArrayList<String> log = new ArrayList<>();
+
+        boolean DO_LOG = false;
+
+        String MSG_DELIM = "\"";
+
+
+        String MAIN_MENU_STR =
+                "\n1. Create an account"
+              + "\n2. Log into account"
+              + "\n0. Exit";
+
+        String ACC_SUBMENU_STR =
+                "\n1. Balance"
+              + "\n2. Log out"
+              + "\n0.Exit";
+
+    /*
+        Map<Integer, String> MAIN_MENU = Map.of(
+                1, "1. Create an account"
+                , 2, "2. Log into account"
+                , 0, "0. Exit"
+        );
+
+
+
+        Map<Integer, String> ACC_SUBMENU = Map.of(
+                1, "1. Balance"
+                , 2, "2. Log out"
+                , 0, "0.Exit"
+        );
+    */
+
+    } // interface AppConst
+  learner_created: true
+feedback_link: https://hyperskill.org/projects/93/stages/516/implement
+status: Solved
+record: 2
