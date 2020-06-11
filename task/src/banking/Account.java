@@ -1,10 +1,13 @@
 package banking;
 
+import banking.constants.AccConst;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.IntStream;
+
 
 public class Account implements AccConst {
 
@@ -104,7 +107,7 @@ public class Account implements AccConst {
     //      has length > 0, if hasCheckDigit == false
     //      has length > 1, if hasCheckDigit == true
     //
-    private int generateLuhnValue(String noAsString, boolean hasCheckDigit) {
+    private static int generateLuhnValue(String noAsString, boolean hasCheckDigit) {
 
         if (noAsString == null || "".equals(noAsString)) {
             return -1;
@@ -130,14 +133,13 @@ public class Account implements AccConst {
         // but that applies to indices counted from 1 - we count from 0 in java,
         // so we multiply 'even-indexed' digits only
         //
-        int value = IntStream
+        return IntStream
                 .range(0, hasCheckDigit ? noAsString.length() - 1 : noAsString.length())
                 .map(i -> i % 2 == 0 ? digits[i] * 2 : digits[i])
                 .map(i -> i > 9 ? i - 9 : i)
                 .sum();
 
-        return value;
-    } // int generateLuhnValue(String, boolean)
+    } // private static int generateLuhnValue(String, boolean)
 
 
     // int generateCheckDigit(String noWithoutCheckDigit)
@@ -147,7 +149,7 @@ public class Account implements AccConst {
     //  - int value of that 'check digit' if ok
     //  - '-1' if something goes wrong: eg. String is empty, has other symbols than digits etc...
     //
-    int generateCheckDigit(String noWithoutCheckDigit) {
+    static int generateCheckDigit(String noWithoutCheckDigit) {
         int luhnValueForString = generateLuhnValue(noWithoutCheckDigit, false);
 
         if (luhnValueForString == -1) {
@@ -156,7 +158,7 @@ public class Account implements AccConst {
 
         return (luhnValueForString % 10 == 0) ? (0) : (10 - luhnValueForString % 10);
 
-    } //int generateCheckDigit(String)
+    } // static int generateCheckDigit(String)
 
 
     // boolean isValidNumber(String)
@@ -165,7 +167,7 @@ public class Account implements AccConst {
     //  - 'true' - if the Luhn formula is satisfied,
     //  - 'false' - otherwise
     //
-    boolean isValidNumber(String noWithCheckDigit) {
+    static boolean isValidNumber(String noWithCheckDigit) {
         // the generateLuhnValue method check by the way, if the given String 'noWithCheckDigit'
         // is proper representation of a number (not null, not empty, only digits etc)
         int luhnValueForString = generateLuhnValue(noWithCheckDigit, true);
@@ -173,11 +175,11 @@ public class Account implements AccConst {
             return false;
         }
 
-        int cs = Integer.valueOf(noWithCheckDigit.substring(noWithCheckDigit.length() - 1));
+        int cs = Integer.parseInt(noWithCheckDigit.substring(noWithCheckDigit.length() - 1));
 
         return (luhnValueForString + cs) % 10 == 0;
 
-    } // boolean isValidNumber(String)
+    } // static boolean isValidNumber(String)
 
 
     // get Customer Account Number as 'int'
@@ -200,12 +202,12 @@ public class Account implements AccConst {
     }
 
 
-    public int getPinAsNumber() {
+    int getPinAsNumber() {
         return pin;
     }
 
 
-    public String getPinAsString() {
+    String getPinAsString() {
         return String.format("%0" + PIN_LEN + "d", pin);
     }
 
@@ -218,14 +220,14 @@ public class Account implements AccConst {
     //      in that case the pin number is NOT updated
     // this method is not named 'setPin', because it has the return value...
     // and therefore is not 'proper setter' according to 'java beans convention'
-    public boolean updatePin(int newPinAsInt) {
+    boolean updatePin(int newPinAsInt) {
         if (newPinAsInt >= PIN_NO_MIN_BOUND && newPinAsInt < PIN_NO_MIN_BOUND) {
             pin = newPinAsInt;
             return true;
         } else {
             return false;
         }
-    } // public boolean updatePin(int)
+    } // boolean updatePin(int)
 
 
     // updates pin with given String
@@ -238,30 +240,30 @@ public class Account implements AccConst {
     //   in that case the pin number is NOT updated
     // this method is not named 'setPin', because it has the return value...
     // and therefore is not 'proper setter' according to 'java beans convention'
-    public boolean updatePin(String newPinAsString) {
+    boolean updatePin(String newPinAsString) {
         if (newPinAsString == null || !newPinAsString.matches("^\\d{" + PIN_LEN + "}$")) {
             return false;
         }
         return updatePin(Integer.parseInt(newPinAsString));
-    } // public boolean updatePin(String)
+    } // boolean updatePin(String)
 
 
-    public int getBalance() {
+    int getBalance() {
         return balance;
     }
 
 
-    public void setBalance(int newBalance) {
+    void setBalance(int newBalance) {
         this.balance = newBalance;
     }
 
 
     // updates balance by given value (maybe 'in +' or 'in -')
     // returns new balance value
-    public int updateBalanceBy(int changeBy) {
+    int updateBalanceBy(int changeBy) {
         this.balance += changeBy;
         return this.balance;
-    }
+    } // int updateBalanceBy(int)
 
 
     public String toString() {

@@ -719,15 +719,6 @@ files:
 
     } // class BankSystem
   learner_created: true
-- name: src/banking/APP_STATES.java
-  visible: true
-  text: |
-    package banking;
-
-    public enum APP_STATES {
-        MAIN_LOOP, LOGGED_IN, ON_EXIT
-    }
-  learner_created: true
 - name: src/banking/Account.java
   visible: true
   text: |
@@ -1003,7 +994,13 @@ files:
 
     } // class Account
   learner_created: true
-- name: src/banking/Constants.java
+- name: src/banking/LoggedConsoleIO.java
+  visible: true
+  learner_created: true
+- name: src/banking/constants/DBConst.java
+  visible: true
+  learner_created: true
+- name: src/banking/constants/AccConst.java
   visible: true
   text: |
     package banking;
@@ -1137,6 +1134,12 @@ files:
     */
 
     } // interface AppConst
+  learner_created: true
+- name: src/banking/constants/AppConst.java
+  visible: true
+  learner_created: true
+- name: src/banking/AccDataBase.java
+  visible: true
   learner_created: true
 feedback_link: https://hyperskill.org/projects/93/stages/517/implement
 status: Unchecked

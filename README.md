@@ -82,6 +82,7 @@ Stage start date: 2020-06-09
 CS/IT concepts to use:
 
 * CLI parameters utilization - eg. SQLite DB file name providing,
+* utilizing 'singleton' design  pattern - for new 'AccDataBase' class and for the 'Log' class refactored from single variable,
 * working with SQLite DB,
 * basic concepts of JPA (Java Persistent API): data source, connection etc.,
 * basic of DDL (Data Definition Language): create DB / create table, drop db, drop table,

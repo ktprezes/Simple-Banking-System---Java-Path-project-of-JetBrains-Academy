@@ -1,6 +1,6 @@
-package banking;
+package banking.constants;
 
-interface DbConst {
+public interface DBConst {
 
     // as of stage#3 of the project we introduce SQLite db support
     // with a file name given as a command line parameter
@@ -11,6 +11,7 @@ interface DbConst {
     // the application will terminate
     //
     String DB_FILE_DEF_NAME = "SimpleBankingDB.s3db";
+    String DB_IN_MEMORY_NAME = ":memory:";
 
     String DB_CONN_STRING_PREFIX = "jdbc:sqlite:";
 

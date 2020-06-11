@@ -1,17 +1,17 @@
-package banking;
+package banking.constants;
 
-interface AppConst { // constants regarding the application as a whole
+public interface AppConst { // constants regarding the application as a whole
 
     // the higher DEBUG_LVL is
     // the more verbose this application is
     // DEBUG_LVL == 0 means 'no debug info'
     //
-    int DEBUG_LVL = 0;
+    int DEBUG_LVL = 1;
 
     // when 'true' every console input and output is recorded into:
     // static ArrayList<String> log = new ArrayList<>();
     //
-    boolean DO_LOG = false;
+    boolean DO_LOG = true;
 
     boolean FILE_APPEND = false;
     boolean FILE_AUTO_FLUSH = true;
@@ -24,12 +24,12 @@ interface AppConst { // constants regarding the application as a whole
 
     String MAIN_MENU_STR =
             "\n1. Create an account"
-          + "\n2. Log into account"
-          + "\n0. Exit";
+                    + "\n2. Log into account"
+                    + "\n0. Exit";
 
     String ACC_SUBMENU_STR =
             "\n1. Balance"
-          + "\n2. Log out"
-          + "\n0.Exit";
+                    + "\n2. Log out"
+                    + "\n0. Exit";
 
 } // interface AppConst

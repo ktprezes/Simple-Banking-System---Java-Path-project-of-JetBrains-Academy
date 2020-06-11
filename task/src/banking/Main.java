@@ -6,26 +6,49 @@ package banking;
  * www: https://hyperskill.org/projects/93?goal=7
  *
  * 2020-06-06 - starting project / stage #1 'card anatomy'
+ * 2020-06-07 - begin of stage #2 'Luhn formula'
+ * 2020-06-09 - begin of stage #3 'I'm so lite'
  *
  * stage #1 "card anatomy"
  *      www: https://hyperskill.org/projects/93/stages/515/implement
  *      goal of the stage: create account / login to account / check balance
+ * stage #2 "Luhn algorithm"
+ *      www: https://hyperskill.org/projects/93/stages/516/implement
+ *      goal of the stage: check digit generation, card number validation
+ *          according to the 'Luhn formula'
+ * stage #3 "I'm so lite"
+ *      www: https://hyperskill.org/projects/93/stages/517/implement
+ *      goal of the stage: ensuring persistence of collected data
+ *          using SQLite DB
  */
 
 
-import java.util.ArrayList;
+import banking.constants.AppConst;
+import banking.constants.DBConst;
+
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Scanner;
 
 
-public class Main implements AppConst {
+public class Main implements AppConst, DBConst {
 
     // variables regarding processing console operations - user inputs / outputs
-    static Scanner sc = new Scanner(System.in);
+    // the Scanner(System.in) is hidden inside the 'LoggedConsoleIO' class
+    //
+    static LoggedConsoleIO loggedIO = LoggedConsoleIO.getInstance();
     static String action = "";
     static String subAction = ""; // submenu action
-    static ArrayList<String> log = new ArrayList<>();
+
+    // while implementing stage#3 of this application
+    // it was necessary to use _the_same_ log in different classes
+    // ('Main' and 'SimpleBankingDataBase' eg.)
+    // therefore it was necessary to make the 'Log' as separate class
+    // utilizing the 'singleton' design pattern
+    // thus hat 'log' local variable became obsolete
+    // static ArrayList<String> log = new ArrayList<>();
 
     static Map<String, Account> accounts = new HashMap<>();
     static String currAccNo = "";
@@ -33,41 +56,44 @@ public class Main implements AppConst {
     static APP_STATES state = APP_STATES.MAIN_LOOP;
 
     // it can be changed via CLI argument '-fileName <fileName>'
-    static String dbFileName = DB_FILE_DEF_NAME;
+    static String dbFileName = DB_IN_MEMORY_NAME;
+//  static String dbFileName = DB_FILE_DEF_NAME;
 
+    static AccDataBase accDB = null;
+
+    /*******************************************************************************
+     *
+     *  begin of public static void main()
+     *
+     */
     public static void main(String[] args) {
-
 
         // process command line arguments
         // the condition is 'i < args.length -1' because we do assume
-        // the last argument is file name itself, not the '-fileName' option
+        // the last argument is the database file name itself,
+        // so the '-fileName' option has to be second-to-last
         for (int i = 0; i < args.length - 1; i++) {
             if ("-filename".equals(args[i].toLowerCase())) {
                 // we take the 'fileName' argument literally
                 // without any 'to lower / upper case' conversion
                 dbFileName = args[++i];
+                break;
             }
         }
-// TODO: try to open or create the DB file
-/*
-        if (doInitialImport) {
-            processInitialImport();
-        }
 
-        // print command line arguments read
         if (DEBUG_LVL > 0) {
-            printAndLog("Command Line Arguments:", DO_LOG);
-            if (doInitialImport) printAndLog("Init. import file: " + initialImportFileName, DO_LOG);
-            if (doFinalExport) printAndLog("Final export file: " + finalExportFileName, DO_LOG);
-         }
-*/
+            loggedIO.print("DB file name: " + dbFileName, DO_LOG);
+        }
+// TODO: try to open or create the DB file
+
+        accDB = AccDataBase.openOrCreate(dbFileName);
 
 
         // BEGIN OF MAIN APPLICATION LOOP
         do {
 
-            printAndLog(MAIN_MENU_STR, DO_LOG);
-            action = readAndLog(DO_LOG).toUpperCase();
+            loggedIO.print(MAIN_MENU_STR, DO_LOG);
+            action = loggedIO.read(DO_LOG).toUpperCase();
 
             switch (action) { // begin of 'main menu' switch
 
@@ -84,8 +110,8 @@ public class Main implements AppConst {
 
                         do { // begin of 'logged into account' loop
 
-                            printAndLog(ACC_SUBMENU_STR, DO_LOG);
-                            subAction = readAndLog(DO_LOG);
+                            loggedIO.print(ACC_SUBMENU_STR, DO_LOG);
+                            subAction = loggedIO.read(DO_LOG);
 
                             switch (subAction) { // being of 'logged into account' switch
                                 case "0": // exit
@@ -99,7 +125,7 @@ public class Main implements AppConst {
                                 case "2": // logout - intentionally no break
                                 default: // 'unknown command' - the same as 'logout'
                                     currAccNo = "";
-                                    printAndLog("\nYou have successfully logged out!", DO_LOG);
+                                    loggedIO.print("\nYou have successfully logged out!", DO_LOG);
                                     state = APP_STATES.MAIN_LOOP;
 
                             } // end of 'logged into account' submenu switch
@@ -122,7 +148,7 @@ public class Main implements AppConst {
                     break; // end of "LIST"
 
                 case "LOG":
-//                    processLog();
+                    processLog();
                     break; // end of "LOG"
 
                 case "RESET STATS":
@@ -130,13 +156,13 @@ public class Main implements AppConst {
                     break; // end of "RESET STATS"
 
                 case "0": // exit
-                    printAndLog("Bye!", DO_LOG);
+                    loggedIO.print("Bye!", DO_LOG);
                     state = APP_STATES.ON_EXIT;
                     break; // leave the program :)
 
                 default:
                     if (DEBUG_LVL > 0) {
-                        printAndLog("I'm so sorry - I don't understand your command: "
+                        loggedIO.print("I'm so sorry - I don't understand your command: "
                                 + MSG_DELIM + action + MSG_DELIM, DO_LOG);
                     }
                     // end of "DEFAULT"
@@ -146,7 +172,17 @@ public class Main implements AppConst {
         } while (state != APP_STATES.ON_EXIT);
         // end of main application loop
 
+        accDB.close();
+
     } // psv main()
+
+
+    /*******************************************************************************
+     *
+     *  end of public static void main()
+     *  begin of other method's section
+     *
+     */
 
 
     // creates new account and puts it into 'accounts' map
@@ -157,10 +193,10 @@ public class Main implements AppConst {
         Account newAcc = new Account();
         accounts.put(newAcc.getFullNoAsString(), newAcc);
 
-        printAndLog("\nYour card has been created\nYour card number:", DO_LOG);
-        printAndLog(newAcc.getFullNoAsString(), DO_LOG);
-        printAndLog("Your card PIN:", DO_LOG);
-        printAndLog(newAcc.getPinAsString(), DO_LOG);
+        loggedIO.print("\nYour card has been created\nYour card number:", DO_LOG);
+        loggedIO.print(newAcc.getFullNoAsString(), DO_LOG);
+        loggedIO.print("Your card PIN:", DO_LOG);
+        loggedIO.print(newAcc.getPinAsString(), DO_LOG);
     } // private static void processAccCreate()
 
 
@@ -171,27 +207,27 @@ public class Main implements AppConst {
     //   on 'login failed': 'null'
     //
     private static String processAccLogin() {
-        printAndLog("\nEnter your card number:", DO_LOG);
-        String no = readAndLog(DO_LOG);
-        printAndLog("Enter your PIN:", DO_LOG);
-        String pin = readAndLog(DO_LOG);
+        loggedIO.print("\nEnter your card number:", DO_LOG);
+        String no = loggedIO.read(DO_LOG);
+        loggedIO.print("Enter your PIN:", DO_LOG);
+        String pin = loggedIO.read(DO_LOG);
 
         if (no == null || pin == null || "null".equals(no) || "null".equals(pin)) {
-            printAndLog("\nWrong card number or PIN!", DO_LOG);
+            loggedIO.print("\nWrong card number or PIN!", DO_LOG);
             return null;
         }
 
         if (!accounts.containsKey(no)) {
-            printAndLog("\nWrong card number or PIN!", DO_LOG);
+            loggedIO.print("\nWrong card number or PIN!", DO_LOG);
             return null;
         }
 
         if (!accounts.get(no).getPinAsString().equals(pin)) {
-            printAndLog("\nWrong card number or PIN!", DO_LOG);
+            loggedIO.print("\nWrong card number or PIN!", DO_LOG);
             return null;
         }
 
-        printAndLog("\nYou have successfully logged in!", DO_LOG);
+        loggedIO.print("\nYou have successfully logged in!", DO_LOG);
         return no;
     } // private static void processAccLogin()
 
@@ -202,42 +238,38 @@ public class Main implements AppConst {
         if (!accounts.containsKey(acc))
             return;
 
-        printAndLog("\nBalance: " + accounts.get(acc).getBalance(), DO_LOG);
+        loggedIO.print("\nBalance: " + accounts.get(acc).getBalance(), DO_LOG);
     } // private static void processBalance()
 
-    // list all created / remembered accounts
+
+    // lists data of all stored accounts / cards
     //
     private static void processAccList() {
         for (Account acc : accounts.values()) {
-            printAndLog(acc.toString(), DO_LOG);
+            loggedIO.print(acc.toString(), DO_LOG);
         }
     } // private static void processAccList() {
 
 
-    // uses global symbols:
-    // Scanner sc - scanner from System.in
-    // ArrayList<String> log - array to log input and outputs
-    // parameter:
-    // Boolean doLog - if 'true' logs returned strings (read from System.in) to 'ArrayList<String> log' too
-    // because 'doLog' is a method's parameter, one can turn on/off logging of every individual method's calls
+    // saves IO Log to file
     //
-    private static String readAndLog(Boolean doLog) {
-        String s = sc.nextLine().strip();
-        if (doLog) log.add(s);
-        return s;
-    } // private static String readLineWithLog()
+    private static void processLog() {
+        if (DEBUG_LVL > 1) loggedIO.print("Save log to file.", DO_LOG);
+        if (loggedIO.getSize() > 0) {
+            loggedIO.print("File name:", DO_LOG);
 
+            try (PrintWriter printWriter = new PrintWriter(new FileWriter(loggedIO.read(DO_LOG), FILE_APPEND), FILE_AUTO_FLUSH)) {
+                printWriter.println(loggedIO.toString());
+                loggedIO.print("The log has been saved.", DO_LOG);
+            } catch (FileNotFoundException e) {
+                loggedIO.print("File not found.", DO_LOG);
+            } catch (Exception e) {
+                loggedIO.print("Some Other Exception Occurred.", DO_LOG);
+            }
 
-    // uses global symbols:
-    // ArrayList<String> log - array to log input and outputs
-    // parameters:
-    //  - s - string to print and (optionally) log
-    //  - doLog - if 'true' logs returned strings (read from System.in) to 'ArrayList<String> log' too
-    // because 'doLog' is a method's parameter, one can turn on/off logging of every individual method's calls
-    //
-    private static void printAndLog(String s, Boolean doLog) {
-        System.out.println(s);
-        if (doLog) log.add(s);
-    } // private static void printLineWithLog()
+        } else {
+            loggedIO.print("Log is empty.", DO_LOG);
+        }
+    } // private static void processLog()
 
 } // class BankSystem

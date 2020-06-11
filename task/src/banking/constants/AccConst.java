@@ -1,6 +1,6 @@
-package banking;
+package banking.constants;
 
-interface AccConst { // account related constants
+public interface AccConst { // account related constants
 
     // the length of the whole card / account number
     // according to task description it has to have 16 digits

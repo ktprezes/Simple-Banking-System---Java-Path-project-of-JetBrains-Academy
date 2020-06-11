@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import static banking.constants.AppConst.DEBUG_LVL;
 import static banking.constants.AppConst.DO_LOG;
 
-class DBSupport implements DBConst {
+class AccDataBase implements DBConst {
 
     // LoggedConsoleIO is a 'singleton' class
     // it processes all System.in/out operations for our application
@@ -19,7 +19,7 @@ class DBSupport implements DBConst {
     //
     static LoggedConsoleIO loggedIO = LoggedConsoleIO.getInstance();
 
-    private static DBSupport simpleBankingDB = null;
+    private static AccDataBase accDB = null;
     private static String dbFileName = null;
     private static String dbUrl = null;
     private static Connection connection = null;
@@ -30,7 +30,7 @@ class DBSupport implements DBConst {
     // and we will create (or get) the object - instance of SimpleBankingDataBase class
     // via the 'openOrCreate' method instead!
     //
-    private DBSupport() {
+    private AccDataBase() {
     } // private SimpleBankingDataBase() constructor
 
 
@@ -55,19 +55,19 @@ class DBSupport implements DBConst {
     //     or its corresponding database cannot be open nor created,
     //     or establishing the connection with that database is impossible
     //
-    static DBSupport openOrCreate(String dbFilePathAndName) {
+    static AccDataBase openOrCreate(String dbFilePathAndName) {
 
         // do we already have some 'SimpleBankingDataBase' object created???
         // => return it!!! it's 'singleton design pattern'!!!
-        if (simpleBankingDB != null) {
-            return simpleBankingDB;
+        if (accDB != null) {
+            return accDB;
         }
 
-        // here we know 'simpleBankingDB' is null...
+        // here we know 'accDB' is null...
         // let's check the input String - does it promise to represent proper db file name?
         if (dbFilePathAndName == null || "".equals(dbFilePathAndName) || "null".equals(dbFilePathAndName)) {
             // no way - the input string is invalid
-            // we won't create the 'simpleBankingDB' object
+            // we won't create the 'accDB' object
             return null;
         }
 
@@ -77,7 +77,7 @@ class DBSupport implements DBConst {
             if (conn != null) {
                 connection = conn;
                 dbFileName = dbFilePathAndName;
-                simpleBankingDB = new DBSupport();
+                accDB = new AccDataBase();
                 if (DEBUG_LVL > 0) {
                     loggedIO.print("SimpleBanking: the database " + dbFilePathAndName + "has been opened / created.", DO_LOG);
                 }
@@ -86,7 +86,7 @@ class DBSupport implements DBConst {
             loggedIO.print(e.getMessage(), DO_LOG);
         }
 
-        return simpleBankingDB;
+        return accDB;
     } // static SimpleBankingDataBase openOrCreate()
 
 
@@ -114,9 +114,9 @@ class DBSupport implements DBConst {
             dbUrl = null;
             dbFileName = null;
             connection = null;
-            simpleBankingDB = null;
+            accDB = null;
             if (DEBUG_LVL > 0) {
-                loggedIO.print("SimpleBanking: database is closed.", DO_LOG);
+                loggedIO.print("SimpleBanking: database has been closed.", DO_LOG);
             }
         }
     } // void close()
