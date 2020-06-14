@@ -22,6 +22,8 @@ public interface AppConst { // constants regarding the application as a whole
         MAIN_LOOP, LOGGED_IN, ON_EXIT
     }
 
+    String APP_NAME = "SimpleBanking";
+
     String MAIN_MENU_STR =
             "\n1. Create an account"
                     + "\n2. Log into account"
@@ -32,4 +34,4 @@ public interface AppConst { // constants regarding the application as a whole
                     + "\n2. Log out"
                     + "\n0. Exit";
 
-} // interface AppConst
+} // public interface AppConst

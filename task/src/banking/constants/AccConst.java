@@ -4,7 +4,7 @@ public interface AccConst { // account related constants
 
     // the length of the whole card / account number
     // according to task description it has to have 16 digits
-
+    //
     int ACC_FULL_NUMBER_LEN = 16;
 
     // it consists of 3 parts:
@@ -18,7 +18,7 @@ public interface AccConst { // account related constants
     // example values: '4*****' - Visa, '34****' or '37****' - AmEx,
     // '51****'..'55****' - MasterCard etc...
     // here - equals '400000' - according to the task description
-
+    //
     String IIN_STR = "400000";
     int ACC_IIN_LEN = IIN_STR.length(); // has to be = 6;
 
@@ -27,17 +27,22 @@ public interface AccConst { // account related constants
     // according to task description the  whole card number has to have 16 digits
     // including 6-digit IIN_STR and 1 digit 'checksum'
     // therefore CAN length is always 9 digits here
-
+    //
     int ACC_CHECKSUM_LEN = 1; // checksum is one-digit number
     int ACC_CAN_LEN = ACC_FULL_NUMBER_LEN - ACC_IIN_LEN - ACC_CHECKSUM_LEN; // = 9
+
+    // used to convert the int value of CAN to String
+    //
+    String ACC_CAN_FORMAT_STRING = "%0" + ACC_CAN_LEN + "d";
 
 
     // used eg. in String.format() method requires 2 args to work:
     // the 'int can' number (individual customer account number
     // and 'int cs' (checksum number)
     // should generate output String representing 16-digit 'full account number'
-
+    //
     String ACC_FULL_NO_2ARG_FORMAT_STRING = IIN_STR + "%0" + ACC_CAN_LEN + "d%0" + ACC_CHECKSUM_LEN + "d";
+
 
     // some 'silent assumptions' has been made:
     // the length of IIN_STR, PIN and CHECKSUM numbers will not exceed 9 digits (6 in fact),
@@ -56,30 +61,35 @@ public interface AccConst { // account related constants
 
     // min number that can be assigned to the account (inclusive)
     // we do suppress creating accounts with number '0' (zero)
-
-    int ACC_NO_MIN_BOUND = 1;
+    //
+    int ACC_CAN_NO_MIN_BOUND = 1;
 
 
     // max value that can be assigned to the account number (exclusive)
     // because the longest account number has 9 digits (see above)
     // thus max acc bound is < 10^ACC_CAN_LEN
-
-    int ACC_NO_MAX_BOUND = (int) Math.pow(10, ACC_CAN_LEN);
+    //
+    int ACC_CAN_NO_MAX_BOUND = (int) Math.pow(10, ACC_CAN_LEN);
 
 
     // the length (in digits) of 'PIN' number
-
+    //
     int PIN_LEN = 4;
+
+
+    // used to convert int value of 'pin' to String
+    //
+    String ACC_PIN_FORMAT_STRING = "%0" + PIN_LEN + "d";
 
 
     // value inclusive - just like for the account number
     // we don't allow to create pin numbers with '0' (zero) value
-
+    //
     int PIN_NO_MIN_BOUND = 1;
 
 
     // max pin bound (exclusive)
-
+    //
     int PIN_NO_MAX_BOUND = (int) Math.pow(10, PIN_LEN);
 
 } // interface AccConst

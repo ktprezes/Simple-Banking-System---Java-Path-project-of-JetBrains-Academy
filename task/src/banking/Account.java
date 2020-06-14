@@ -61,10 +61,10 @@ public class Account implements AccConst {
 
         // let's generate unique (not generated / remembered yet) 'can' (customer account number)
         // meeting the criteria - it has to be integer in the range:
-        // ACC_NO_MIN_BOUND..ACC_NO_MAX_BOUND (min inclusive, max exclusive)
+        // ACC_CAN_NO_MIN_BOUND..ACC_CAN_NO_MAX_BOUND (min inclusive, max exclusive)
 
         do {
-            pretendingNumber = rnd.nextInt(ACC_NO_MAX_BOUND - ACC_NO_MIN_BOUND) + ACC_NO_MIN_BOUND;
+            pretendingNumber = rnd.nextInt(ACC_CAN_NO_MAX_BOUND - ACC_CAN_NO_MIN_BOUND) + ACC_CAN_NO_MIN_BOUND;
         } while (alreadyGeneratedCanNumbers.contains(pretendingNumber));
 
         this.can = pretendingNumber;
@@ -81,6 +81,39 @@ public class Account implements AccConst {
         this.cs = generateCheckDigit(IIN_STR + getCanAsString());
 
     } // Account() constructor
+
+
+    // public static boolean isStringOfDigits(String s)
+    // checks if given String is not empty and contains only digits
+    //
+    public static boolean isStringOfDigits(String s) {
+        if (s == null || "".equals(s) || "null".equals(s)) {
+            return false;
+        }
+
+        if (!s.matches("^\\d+$")) {
+            return false;
+        }
+
+        return true;
+    } //public static int isStringOfDigits(String s)
+
+
+    // public static boolean isStringOfDigitsOfLengthN(String s, int n)
+    // checks if given String is 'String of digits' and has length 'n'
+    // if (n < 1) returns 'false' without checking the String itself
+    //
+    public static boolean isStringOfDigitsOfLengthN(String s, int n) {
+        if (n < 1) {
+            return false;
+        }
+
+        if (!isStringOfDigits(s)) {
+            return false;
+        }
+
+        return s.length() == n ? true : false;
+    } // public static boolean isStringOfDigitsOfLengthN(String s, int n)
 
 
     // int generateLuhnValue(String noAsString, boolean hasCheckDigit){...};
@@ -109,15 +142,11 @@ public class Account implements AccConst {
     //
     private static int generateLuhnValue(String noAsString, boolean hasCheckDigit) {
 
-        if (noAsString == null || "".equals(noAsString)) {
+        if (!isStringOfDigits(noAsString)) {
             return -1;
         }
 
         if (noAsString.length() < (hasCheckDigit ? 2 : 1)) {
-            return -1;
-        }
-
-        if (!noAsString.matches("^\\d+$")) {
             return -1;
         }
 
@@ -161,13 +190,13 @@ public class Account implements AccConst {
     } // static int generateCheckDigit(String)
 
 
-    // boolean isValidNumber(String)
+    // boolean isValidLuhnNumber(String)
     // checks if the given String represents valid number according to 'Luhn formula'
     // returns:
     //  - 'true' - if the Luhn formula is satisfied,
     //  - 'false' - otherwise
     //
-    static boolean isValidNumber(String noWithCheckDigit) {
+    public static boolean isValidLuhnNumber(String noWithCheckDigit) {
         // the generateLuhnValue method check by the way, if the given String 'noWithCheckDigit'
         // is proper representation of a number (not null, not empty, only digits etc)
         int luhnValueForString = generateLuhnValue(noWithCheckDigit, true);
@@ -179,7 +208,98 @@ public class Account implements AccConst {
 
         return (luhnValueForString + cs) % 10 == 0;
 
-    } // static boolean isValidNumber(String)
+    } // static boolean isValidLuhnNumber(String)
+
+
+    // public static boolean isValidCanNumber(String s){
+    // checks if the given String represents valid CAN (customer account number)
+    // such valid CAN number should:
+    //  - be string of ACC_CAN_LEN digits (9 digits right now)
+    //  - represent the number within the ACC_CAN_NO_MIN_BOUND (inclusive) .. ACC_CAN_NO_MAX_BOUND (exclusive) range
+    //
+    public static boolean isValidCanNumber(String s) {
+        if (!isStringOfDigitsOfLengthN(s, ACC_CAN_LEN)) {
+            return false;
+        }
+
+        int can_val = Integer.parseInt(s);
+
+        return (can_val >= ACC_CAN_NO_MIN_BOUND && can_val < ACC_CAN_NO_MAX_BOUND) ? true : false;
+
+    } // public static boolean isValidCanNumber(String s)
+
+
+    // public static boolean isValidSimpleBankingAccNumber(String s){
+    // checks if a given String contains valid Account number of our Simple Banking system
+    // such valid Account number should:
+    //  - be string of ACC_FULL_NUMBER_LEN digits (16 digits right now)
+    //  - be valid number according to Luhn formula (it checks by the way the value of last 'check digit' too)
+    //  - the prefix of ACC_IIN_LEN digits (6 right now) should be equal to IIN_STR ('400000' right now)
+    //  - next ACC_CAN_LEN digits (9 right now) should represent valid valid CAN (customer account number)
+    //    that means it should represent the number within
+    //    the ACC_CAN_NO_MIN_BOUND (inclusive) .. ACC_CAN_NO_MAX_BOUND (exclusive) range
+    //
+    public static boolean isValidSimpleBankingAccNumber(String s) {
+        if (!isStringOfDigitsOfLengthN(s, ACC_FULL_NUMBER_LEN)) {
+            return false;
+        }
+        if (!isValidLuhnNumber(s)) {
+            return false;
+        }
+        if (!s.startsWith(IIN_STR)) {
+            return false;
+        }
+
+        return isValidCanNumber(s.substring(ACC_IIN_LEN, ACC_IIN_LEN + ACC_CAN_LEN)) ? true : false;
+
+    } // public static boolean isValidSimpleBankingAccNumber(String s)
+
+
+    public static boolean isValidSimpleBankingPinNumber(String s) {
+        if (!isStringOfDigitsOfLengthN(s, PIN_LEN)) {
+            return false;
+        }
+
+        int pin_val = Integer.parseInt(s);
+
+        return (pin_val >= PIN_NO_MIN_BOUND && pin_val < PIN_NO_MAX_BOUND) ? true : false;
+
+    } // public static boolean isValidSimpleBankingPinNumber(String s)
+
+
+    // public static int extractCanNumberFromFullAccNo(String s)
+    // extract as 'int' the CAN (customer account number) from given string
+    // representing Simple Banking Full Account Number
+    // checks if the given String represent valid Simple Banking Full Account Number
+    // if no - returns '-1'
+    //
+    public static int extractCanNumberFromFullAccNo(String s) {
+        if (!isValidSimpleBankingAccNumber(s)) {
+            return -1;
+        }
+
+        return Integer.parseInt(s.substring(ACC_IIN_LEN, ACC_IIN_LEN + ACC_CAN_LEN));
+    } // public static int extractCanNumberFromFullAccNo(String s)
+
+
+    // static boolean updateIssuedAccList(String s)
+    // checks if the given String represents valid 'SimpleBanking Account / Card Full Number'
+    // if not, returns 'false'
+    // if yes - adds the int representing its CAN (customer account number)
+    // to the list (set in fact) of 'alreadyGeneratedCanNumbers' (runtime utilized data structure)
+    // and returns 'true'
+    // this function is intended to help ensuring that no CAN will be generated more then once
+    // and all Acc / Card numbers already stored in external DB file will be unique
+    //
+    static boolean updateIssuedAccList(String s) {
+        if (!isValidSimpleBankingAccNumber(s)) {
+            return false;
+        }
+
+        alreadyGeneratedCanNumbers.add(extractCanNumberFromFullAccNo(s));
+
+        return true;
+    } // static boolean updateIssuedAccList(String s)
 
 
     // get Customer Account Number as 'int'
@@ -192,7 +312,7 @@ public class Account implements AccConst {
     // returns zero-left-padding String of ACC_CAN_LEN
     // representing the CAN part of account / cart number
     String getCanAsString() {
-        return String.format("%0" + ACC_CAN_LEN + "d", can);
+        return String.format(ACC_CAN_FORMAT_STRING, can);
     }
 
 
@@ -208,7 +328,7 @@ public class Account implements AccConst {
 
 
     String getPinAsString() {
-        return String.format("%0" + PIN_LEN + "d", pin);
+        return String.format(ACC_PIN_FORMAT_STRING, pin);
     }
 
 
@@ -220,6 +340,7 @@ public class Account implements AccConst {
     //      in that case the pin number is NOT updated
     // this method is not named 'setPin', because it has the return value...
     // and therefore is not 'proper setter' according to 'java beans convention'
+    //
     boolean updatePin(int newPinAsInt) {
         if (newPinAsInt >= PIN_NO_MIN_BOUND && newPinAsInt < PIN_NO_MIN_BOUND) {
             pin = newPinAsInt;
@@ -240,6 +361,7 @@ public class Account implements AccConst {
     //   in that case the pin number is NOT updated
     // this method is not named 'setPin', because it has the return value...
     // and therefore is not 'proper setter' according to 'java beans convention'
+    //
     boolean updatePin(String newPinAsString) {
         if (newPinAsString == null || !newPinAsString.matches("^\\d{" + PIN_LEN + "}$")) {
             return false;
@@ -260,6 +382,7 @@ public class Account implements AccConst {
 
     // updates balance by given value (maybe 'in +' or 'in -')
     // returns new balance value
+    //
     int updateBalanceBy(int changeBy) {
         this.balance += changeBy;
         return this.balance;

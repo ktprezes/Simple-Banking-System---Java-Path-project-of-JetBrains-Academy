@@ -1,226 +1,96 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="SimpleBankSystemTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2020-06-08T09:55:07" hostname="ktp-toshiba-p75" time="0.353">
+<testsuite name="SimpleBankSystemTest" tests="1" skipped="0" failures="1" errors="0" timestamp="2020-06-14T22:33:10" hostname="ktp-toshiba-p75" time="0.217">
   <properties/>
-  <testcase name="start" classname="SimpleBankSystemTest" time="0.353"/>
+  <testcase name="start" classname="SimpleBankSystemTest" time="0.217">
+    <failure message="java.lang.AssertionError: Wrong answer in test #3&#10;&#10;Your database doesn’t have a table named ‘card’&#10;&#10;Please find below the output of your program during this failed test.&#10;&#10;---&#10;&#10;Arguments: -fileName card.s3db&#10;&#10;DB file name: card.s3db&#10;SimpleBanking: an error occurred while trying to open / create the database 'card.s3db':&#10;[SQLITE_ERROR] SQL error or missing database (no such table: card)&#10;SimpleBanking: the 'card.s3db' database couldn't be opened / created.&#10;the application is about to quit." type="java.lang.AssertionError">java.lang.AssertionError: Wrong answer in test #3
+
+Your database doesn’t have a table named ‘card’
+
+Please find below the output of your program during this failed test.
+
+---
+
+Arguments: -fileName card.s3db
+
+DB file name: card.s3db
+SimpleBanking: an error occurred while trying to open / create the database 'card.s3db':
+[SQLITE_ERROR] SQL error or missing database (no such table: card)
+SimpleBanking: the 'card.s3db' database couldn't be opened / created.
+the application is about to quit.
+	at org.junit.Assert.fail(Assert.java:88)
+	at org.hyperskill.hstest.stage.StageTest.start(StageTest.java:97)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)
+	at org.junit.internal.runners.statements.RunAfters.evaluate(RunAfters.java:27)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecutor.runTestClass(JUnitTestClassExecutor.java:110)
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecutor.execute(JUnitTestClassExecutor.java:58)
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecutor.execute(JUnitTestClassExecutor.java:38)
+	at org.gradle.api.internal.tasks.testing.junit.AbstractJUnitTestClassProcessor.processTestClass(AbstractJUnitTestClassProcessor.java:62)
+	at org.gradle.api.internal.tasks.testing.SuiteTestClassProcessor.processTestClass(SuiteTestClassProcessor.java:51)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:35)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24)
+	at org.gradle.internal.dispatch.ContextClassLoaderDispatch.dispatch(ContextClassLoaderDispatch.java:32)
+	at org.gradle.internal.dispatch.ProxyDispatchAdapter$DispatchingInvocationHandler.invoke(ProxyDispatchAdapter.java:93)
+	at com.sun.proxy.$Proxy2.processTestClass(Unknown Source)
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker.processTestClass(TestWorker.java:118)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:35)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24)
+	at org.gradle.internal.remote.internal.hub.MessageHubBackedObjectConnection$DispatchWrapper.dispatch(MessageHubBackedObjectConnection.java:175)
+	at org.gradle.internal.remote.internal.hub.MessageHubBackedObjectConnection$DispatchWrapper.dispatch(MessageHubBackedObjectConnection.java:157)
+	at org.gradle.internal.remote.internal.hub.MessageHub$Handler.run(MessageHub.java:404)
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:63)
+	at org.gradle.internal.concurrent.ManagedExecutorImpl$1.run(ManagedExecutorImpl.java:46)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
+	at org.gradle.internal.concurrent.ThreadFactoryImpl$ManagedThreadRunnable.run(ThreadFactoryImpl.java:55)
+	at java.base/java.lang.Thread.run(Thread.java:834)
+</failure>
+  </testcase>
   <system-out><![CDATA[?[1;31m
 Start test 1?[0m
-
-1. Create an account
-2. Log into account
-0. Exit
-> 1
-
-Your card has been created
-Your card number:
-4000000527303285
-Your card PIN:
-0148
-
-1. Create an account
-2. Log into account
-0. Exit
-> 1
-
-Your card has been created
-Your card number:
-4000005915352950
-Your card PIN:
-6613
-
-1. Create an account
-2. Log into account
-0. Exit
-> 0
-Bye!
+DB file name: card.s3db
+SimpleBanking: an error occurred while trying to open / create the database 'card.s3db':
+[SQLITE_ERROR] SQL error or missing database (no such table: card)
+SimpleBanking: the 'card.s3db' database couldn't be opened / created.
+the application is about to quit.
 ?[1;31m
 Start test 2?[0m
-
-1. Create an account
-2. Log into account
-0. Exit
-> 1
-
-Your card has been created
-Your card number:
-4000001786773507
-Your card PIN:
-9339
-
-1. Create an account
-2. Log into account
-0. Exit
-> 2
-
-Enter your card number:
-> 4000001786773507
-Enter your PIN:
-> 9339
-
-You have successfully logged in!
-
-1. Balance
-2. Log out
-0.Exit
-> 2
-
-You have successfully logged out!
-
-1. Create an account
-2. Log into account
-0. Exit
-> 0
-Bye!
+DB file name: card.s3db
+SimpleBanking: an error occurred while trying to open / create the database 'card.s3db':
+[SQLITE_ERROR] SQL error or missing database (no such table: card)
+SimpleBanking: the 'card.s3db' database couldn't be opened / created.
+the application is about to quit.
 ?[1;31m
 Start test 3?[0m
-
-1. Create an account
-2. Log into account
-0. Exit
-> 1
-
-Your card has been created
-Your card number:
-4000004713803397
-Your card PIN:
-9222
-
-1. Create an account
-2. Log into account
-0. Exit
-> 2
-
-Enter your card number:
-> 4000004713803397
-Enter your PIN:
-> 5098
-
-Wrong card number or PIN!
-
-1. Create an account
-2. Log into account
-0. Exit
-> 0
-Bye!
-?[1;31m
-Start test 4?[0m
-
-1. Create an account
-2. Log into account
-0. Exit
-> 1
-
-Your card has been created
-Your card number:
-4000007520268621
-Your card PIN:
-6210
-
-1. Create an account
-2. Log into account
-0. Exit
-> 2
-
-Enter your card number:
-> 400000391518742
-Enter your PIN:
-> 6210
-
-Wrong card number or PIN!
-
-1. Create an account
-2. Log into account
-0. Exit
-> 0
-Bye!
-?[1;31m
-Start test 5?[0m
-
-1. Create an account
-2. Log into account
-0. Exit
-> 1
-
-Your card has been created
-Your card number:
-4000004269170035
-Your card PIN:
-6459
-
-1. Create an account
-2. Log into account
-0. Exit
-> 2
-
-Enter your card number:
-> 4000004269170035
-Enter your PIN:
-> 6459
-
-You have successfully logged in!
-
-1. Balance
-2. Log out
-0.Exit
-> 1
-
-Balance: 0
-
-1. Balance
-2. Log out
-0.Exit
-> 0
-?[1;31m
-Start test 6?[0m
-
-1. Create an account
-2. Log into account
-0. Exit
-> 1
-
-Your card has been created
-Your card number:
-4000003290313614
-Your card PIN:
-6706
-
-1. Create an account
-2. Log into account
-0. Exit
-> 1
-
-Your card has been created
-Your card number:
-4000008576891126
-Your card PIN:
-4866
-
-1. Create an account
-2. Log into account
-0. Exit
-> 1
-
-Your card has been created
-Your card number:
-4000005098927016
-Your card PIN:
-8891
-
-1. Create an account
-2. Log into account
-0. Exit
-> 1
-
-Your card has been created
-Your card number:
-4000000605819863
-Your card PIN:
-7142
-
-1. Create an account
-2. Log into account
-0. Exit
-> 0
-Bye!
+DB file name: card.s3db
+SimpleBanking: an error occurred while trying to open / create the database 'card.s3db':
+[SQLITE_ERROR] SQL error or missing database (no such table: card)
+SimpleBanking: the 'card.s3db' database couldn't be opened / created.
+the application is about to quit.
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

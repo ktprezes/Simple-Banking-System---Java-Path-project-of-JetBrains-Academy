@@ -29,6 +29,8 @@ import banking.constants.DBConst;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.PrintWriter;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,13 +46,13 @@ public class Main implements AppConst, DBConst {
 
     // while implementing stage#3 of this application
     // it was necessary to use _the_same_ log in different classes
-    // ('Main' and 'SimpleBankingDataBase' eg.)
+    // ('Main' and 'AccDataBase' eg.)
     // therefore it was necessary to make the 'Log' as separate class
     // utilizing the 'singleton' design pattern
     // thus hat 'log' local variable became obsolete
     // static ArrayList<String> log = new ArrayList<>();
 
-    static Map<String, Account> accounts = new HashMap<>();
+//    static Map<String, Account> accounts = new HashMap<>();
     static String currAccNo = "";
 
     static APP_STATES state = APP_STATES.MAIN_LOOP;
@@ -61,7 +63,7 @@ public class Main implements AppConst, DBConst {
 
     static AccDataBase accDB = null;
 
-    /*******************************************************************************
+    /********************************************************************************
      *
      *  begin of public static void main()
      *
@@ -84,12 +86,57 @@ public class Main implements AppConst, DBConst {
         if (DEBUG_LVL > 0) {
             loggedIO.print("DB file name: " + dbFileName, DO_LOG);
         }
-// TODO: try to open or create the DB file
 
+        // let's try to open or create the DB file
         accDB = AccDataBase.openOrCreate(dbFileName);
 
+        // it is impossible for the application to run without open database connection...
+        if (accDB == null || accDB.getConnection() == null) {
+            loggedIO.print(APP_NAME + ": the '" + dbFileName + "' database couldn't be opened / created."
+                    + "\nthe application is about to quit.", DO_LOG);
+            return; // quit the Application
+        }
 
-        // BEGIN OF MAIN APPLICATION LOOP
+        // OK, we can assume we have the database file and open connection here...
+        // let's ensure this DB has the table 'card' with proper structure.
+        // as of 'stage#3' of this project the 'card' table should have the following columns:
+        //        id      INTEGER
+        //        number  TEXT
+        //        pin     TEXT
+        //        balance INTEGER DEFAULT 0
+        if (!accDB.ensureTableCardStructure()) {
+            loggedIO.print(APP_NAME + ": the '" + dbFileName + "' database - some problem with 'card' table occurred."
+                    + "\nthe application is about to quit.", DO_LOG);
+            return; // quit the Application
+        }
+
+        // let's populate runtime-map with data
+        ResultSet rs = accDB.getAllCards();
+        try {
+            while (rs != null && rs.next()) {
+                if (DEBUG_LVL > 0) {
+                    System.out.format("id: %d, number: %s, pin: %s, balance = %d%n",
+                            rs.getInt("id"), rs.getString("number"),
+                            rs.getString("pin"), rs.getInt("balance"));
+                }
+
+                Account.updateIssuedAccList(rs.getString("number"));
+            } // while(rs.next())
+
+            if (DEBUG_LVL > 0) {
+                System.out.println("That's all folks");
+            }
+        } catch (SQLException e) {
+            loggedIO.print(APP_NAME + ": an error occurred while trying get next row from the DB table 'card'", DO_LOG);
+            loggedIO.print(e.getMessage(), DO_LOG);
+        }
+
+
+        /****************************************
+         *
+         * BEGIN OF THE MAIN APPLICATION LOOP
+         *
+         */
         do {
 
             loggedIO.print(MAIN_MENU_STR, DO_LOG);
@@ -191,12 +238,13 @@ public class Main implements AppConst, DBConst {
     private static void processAccCreate() {
 
         Account newAcc = new Account();
-        accounts.put(newAcc.getFullNoAsString(), newAcc);
-
-        loggedIO.print("\nYour card has been created\nYour card number:", DO_LOG);
-        loggedIO.print(newAcc.getFullNoAsString(), DO_LOG);
-        loggedIO.print("Your card PIN:", DO_LOG);
-        loggedIO.print(newAcc.getPinAsString(), DO_LOG);
+//        accounts.put(newAcc.getFullNoAsString(), newAcc);
+        if(accDB.addNewCard(newAcc.getFullNoAsString(), newAcc.getPinAsString())) {
+            loggedIO.print("\nYour card has been created\nYour card number:", DO_LOG);
+            loggedIO.print(newAcc.getFullNoAsString(), DO_LOG);
+            loggedIO.print("Your card PIN:", DO_LOG);
+            loggedIO.print(newAcc.getPinAsString(), DO_LOG);
+        }
     } // private static void processAccCreate()
 
 
@@ -212,17 +260,23 @@ public class Main implements AppConst, DBConst {
         loggedIO.print("Enter your PIN:", DO_LOG);
         String pin = loggedIO.read(DO_LOG);
 
-        if (no == null || pin == null || "null".equals(no) || "null".equals(pin)) {
+        // some entry checking without querying the data base yet
+        if (!Account.isValidSimpleBankingAccNumber(no) || !Account.isValidSimpleBankingPinNumber(pin)) {
             loggedIO.print("\nWrong card number or PIN!", DO_LOG);
             return null;
         }
-
+/*
         if (!accounts.containsKey(no)) {
             loggedIO.print("\nWrong card number or PIN!", DO_LOG);
             return null;
         }
 
         if (!accounts.get(no).getPinAsString().equals(pin)) {
+            loggedIO.print("\nWrong card number or PIN!", DO_LOG);
+            return null;
+        }
+*/
+        if(!accDB.containsAccNoAndPin(no, pin)) {
             loggedIO.print("\nWrong card number or PIN!", DO_LOG);
             return null;
         }
@@ -233,21 +287,51 @@ public class Main implements AppConst, DBConst {
 
 
     private static void processBalance(String acc) {
-        if (acc == null || "null".equals(acc) || "".equals(acc))
+        if(!Account.isValidSimpleBankingAccNumber(acc)){
             return;
-        if (!accounts.containsKey(acc))
+        }
+        if (!accDB.containsAccNo(acc)){
             return;
+        }
 
-        loggedIO.print("\nBalance: " + accounts.get(acc).getBalance(), DO_LOG);
+//        loggedIO.print("\nBalance: " + accounts.get(acc).getBalance(), DO_LOG);
+        loggedIO.print("\nBalance: " + accDB.getBalanceOfAccNo(acc), DO_LOG);
     } // private static void processBalance()
 
 
     // lists data of all stored accounts / cards
     //
     private static void processAccList() {
+/*
+        loggedIO.print("Accounts stored in internal run-time list:", DO_LOG);
+
         for (Account acc : accounts.values()) {
             loggedIO.print(acc.toString(), DO_LOG);
         }
+*/
+
+
+        loggedIO.print("Accounts stored in the database:", DO_LOG);
+        ResultSet rs = accDB.getAllCards();
+        try {
+            while (rs != null && rs.next()) {
+                if (DEBUG_LVL > 0) {
+                    System.out.format("id: %d, number: %s, pin: %s, balance = %d%n",
+                            rs.getInt("id"), rs.getString("number"),
+                            rs.getString("pin"), rs.getInt("balance"));
+                }
+
+                Account.updateIssuedAccList(rs.getString("number"));
+            } // while(rs.next())
+
+            if (DEBUG_LVL > 0) {
+                System.out.println("That's all folks");
+            }
+        } catch (SQLException e) {
+            loggedIO.print(APP_NAME + ": an error occurred while trying get next row from the DB table 'card'", DO_LOG);
+            loggedIO.print(e.getMessage(), DO_LOG);
+        }
+
     } // private static void processAccList() {
 
 
