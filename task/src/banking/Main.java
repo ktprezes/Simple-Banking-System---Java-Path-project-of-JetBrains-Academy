@@ -321,6 +321,7 @@ public class Main implements AppConst, DBConst {
 
 
     private static void processDoTransferFromAcc(String accFrom) {
+
         if (!Account.isValidSimpleBankingAccNumber(accFrom)) {
             loggedIO.print("\nWrong 'from' account number!", DO_LOG);
             return;
@@ -332,6 +333,11 @@ public class Main implements AppConst, DBConst {
 
         loggedIO.print("\nTransfer\nEnter card number:", DO_LOG);
         String accTo = loggedIO.read(DO_LOG);
+
+        if(accFrom.equals(accTo)){
+            loggedIO.print("You can't transfer money to the same account!", DO_LOG);
+            return;
+        }
         if (!Account.isValidSimpleBankingAccNumber(accTo)) {
             loggedIO.print("Probably you made mistake in the card number. Please try again!", DO_LOG);
             return;
