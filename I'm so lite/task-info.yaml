@@ -1144,12 +1144,9 @@ files:
 - name: src/banking/DBTableCard.java
   visible: true
   learner_created: true
-- name: tempDatabase.s3db
-  visible: true
-  learner_created: true
 - name: card.s3db
   visible: true
   learner_created: true
 feedback_link: https://hyperskill.org/projects/93/stages/517/implement
 status: Solved
-record: -1
+record: 3
