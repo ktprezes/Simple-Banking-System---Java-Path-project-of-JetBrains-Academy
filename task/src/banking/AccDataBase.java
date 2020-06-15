@@ -78,10 +78,6 @@ class AccDataBase implements DBConst {
             connection = DriverManager.getConnection(dbUrl);
             if (connection != null) {
                 dbFileName = dbFilePathAndName;
-                sqlStmt = connection.createStatement();
-                sqlPstmtNewCard = connection.prepareStatement(SQL_TABLE_CARD_INSERT_NEW_CARD);
-                sqlPstmtQueryCardNoPin = connection.prepareStatement(SQL_TABLE_CARD_QUERY_CARD_BY_NUMBER_AND_PIN);
-                sqlPstmtQueryCardNo = connection.prepareStatement(SQL_TABLE_CARD_QUERY_CARD_BY_NUMBER);
                 accDB = new AccDataBase();
                 if (DEBUG_LVL > 0) {
                     loggedIO.print(APP_NAME + ": the '" + dbFilePathAndName + "' database has been opened / created.", DO_LOG);
@@ -113,7 +109,7 @@ class AccDataBase implements DBConst {
     //        number  TEXT
     //        pin     TEXT
     //        balance INTEGER DEFAULT 0
-    boolean ensureTableCardStructure() {
+    boolean prepareTableCardAndStatements() {
 
         if (connection == null) {
             loggedIO.print(APP_NAME + ": inside 'ensureCardTableStructure()' - connection is null", DO_LOG);
@@ -123,8 +119,18 @@ class AccDataBase implements DBConst {
 
         boolean result = false;
 
-        try { // sql statement was created just after establishing the connection to the database
+        try {
+            // this 'createStatement' has to be invoked BEFORE SQL_TABLE_CARD_CREATING_STRING executing
+            //
+            sqlStmt = connection.createStatement();
             sqlStmt.execute(SQL_TABLE_CARD_CREATING_STRING);
+
+            // and these statements has to be invoked AFTER SQL_TABLE_CARD_CREATING_STRING executing
+            // because they depend on the existence of the 'card' table
+            //
+            sqlPstmtNewCard = connection.prepareStatement(SQL_TABLE_CARD_INSERT_NEW_CARD);
+            sqlPstmtQueryCardNoPin = connection.prepareStatement(SQL_TABLE_CARD_QUERY_CARD_BY_NUMBER_AND_PIN);
+            sqlPstmtQueryCardNo = connection.prepareStatement(SQL_TABLE_CARD_QUERY_CARD_BY_NUMBER);
 
             // if we got to this point, then probably everything is fine :)
             result = true;

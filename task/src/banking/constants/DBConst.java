@@ -24,11 +24,19 @@ public interface DBConst {
     //
     String SQL_TABLE_CARD_CREATING_STRING =
         "CREATE TABLE IF NOT EXISTS card (\n"
+            + "id INTEGER PRIMARY KEY,\n"
+            + "number TEXT,\n"
+            + "pin TEXT,\n"
+            + "balance INTEGER DEFAULT 0\n"
+            + ");";
+/*
+        "CREATE TABLE IF NOT EXISTS card (\n"
             + "  id      INTEGER PRIMARY KEY\n"
             + ", number  TEXT NOT NULL\n"
             + ", pin     TEXT NOT NULL\n"
             + ", balance INTEGER DEFAULT 0\n"
             + ");";
+*/
 
     String SQL_TABLE_CARD_SELECT_ALL = "SELECT id, number, pin, balance FROM card;";
 

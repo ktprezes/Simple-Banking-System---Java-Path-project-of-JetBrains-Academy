@@ -29,7 +29,7 @@
 </td>
 <td>
 <div class="infoBox" id="failures">
-<div class="counter">1</div>
+<div class="counter">0</div>
 <p>failures</p>
 </div>
 </td>
@@ -41,7 +41,7 @@
 </td>
 <td>
 <div class="infoBox" id="duration">
-<div class="counter">0.217s</div>
+<div class="counter">0.821s</div>
 <p>duration</p>
 </div>
 </td>
@@ -50,8 +50,8 @@
 </div>
 </td>
 <td>
-<div class="infoBox failures" id="successRate">
-<div class="percent">0%</div>
+<div class="infoBox success" id="successRate">
+<div class="percent">100%</div>
 <p>successful</p>
 </div>
 </td>
@@ -61,92 +61,13 @@
 <div id="tabs">
 <ul class="tabLinks">
 <li>
-<a href="#tab0">Failed tests</a>
+<a href="#tab0">Tests</a>
 </li>
 <li>
-<a href="#tab1">Tests</a>
-</li>
-<li>
-<a href="#tab2">Standard output</a>
+<a href="#tab1">Standard output</a>
 </li>
 </ul>
 <div id="tab0" class="tab">
-<h2>Failed tests</h2>
-<div class="test">
-<a name="start"></a>
-<h3 class="failures">start</h3>
-<span class="code">
-<pre>java.lang.AssertionError: Wrong answer in test #3
-
-Your database doesn’t have a table named ‘card’
-
-Please find below the output of your program during this failed test.
-
----
-
-Arguments: -fileName card.s3db
-
-DB file name: card.s3db
-SimpleBanking: an error occurred while trying to open / create the database 'card.s3db':
-[SQLITE_ERROR] SQL error or missing database (no such table: card)
-SimpleBanking: the 'card.s3db' database couldn't be opened / created.
-the application is about to quit.
-	at org.junit.Assert.fail(Assert.java:88)
-	at org.hyperskill.hstest.stage.StageTest.start(StageTest.java:97)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
-	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
-	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
-	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
-	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
-	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
-	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
-	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
-	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
-	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
-	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
-	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
-	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
-	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
-	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)
-	at org.junit.internal.runners.statements.RunAfters.evaluate(RunAfters.java:27)
-	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
-	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecutor.runTestClass(JUnitTestClassExecutor.java:110)
-	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecutor.execute(JUnitTestClassExecutor.java:58)
-	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecutor.execute(JUnitTestClassExecutor.java:38)
-	at org.gradle.api.internal.tasks.testing.junit.AbstractJUnitTestClassProcessor.processTestClass(AbstractJUnitTestClassProcessor.java:62)
-	at org.gradle.api.internal.tasks.testing.SuiteTestClassProcessor.processTestClass(SuiteTestClassProcessor.java:51)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
-	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
-	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:35)
-	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24)
-	at org.gradle.internal.dispatch.ContextClassLoaderDispatch.dispatch(ContextClassLoaderDispatch.java:32)
-	at org.gradle.internal.dispatch.ProxyDispatchAdapter$DispatchingInvocationHandler.invoke(ProxyDispatchAdapter.java:93)
-	at com.sun.proxy.$Proxy2.processTestClass(Unknown Source)
-	at org.gradle.api.internal.tasks.testing.worker.TestWorker.processTestClass(TestWorker.java:118)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
-	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
-	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:35)
-	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24)
-	at org.gradle.internal.remote.internal.hub.MessageHubBackedObjectConnection$DispatchWrapper.dispatch(MessageHubBackedObjectConnection.java:175)
-	at org.gradle.internal.remote.internal.hub.MessageHubBackedObjectConnection$DispatchWrapper.dispatch(MessageHubBackedObjectConnection.java:157)
-	at org.gradle.internal.remote.internal.hub.MessageHub$Handler.run(MessageHub.java:404)
-	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:63)
-	at org.gradle.internal.concurrent.ManagedExecutorImpl$1.run(ManagedExecutorImpl.java:46)
-	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
-	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
-	at org.gradle.internal.concurrent.ThreadFactoryImpl$ManagedThreadRunnable.run(ThreadFactoryImpl.java:55)
-	at java.base/java.lang.Thread.run(Thread.java:834)
-</pre>
-</span>
-</div>
-</div>
-<div id="tab1" class="tab">
 <h2>Tests</h2>
 <table>
 <thead>
@@ -157,36 +78,294 @@ the application is about to quit.
 </tr>
 </thead>
 <tr>
-<td class="failures">start</td>
-<td class="failures">0.217s</td>
-<td class="failures">failed</td>
+<td class="success">start</td>
+<td class="success">0.821s</td>
+<td class="success">passed</td>
 </tr>
 </table>
 </div>
-<div id="tab2" class="tab">
+<div id="tab1" class="tab">
 <h2>Standard output</h2>
 <span class="code">
 <pre>?[1;31m
 Start test 1?[0m
 DB file name: card.s3db
-SimpleBanking: an error occurred while trying to open / create the database 'card.s3db':
-[SQLITE_ERROR] SQL error or missing database (no such table: card)
-SimpleBanking: the 'card.s3db' database couldn't be opened / created.
-the application is about to quit.
+SimpleBanking: the 'card.s3db' database has been opened / created.
+That's all folks
+
+1. Create an account
+2. Log into account
+0. Exit
+&gt; 0
+Bye!
+SimpleBanking: the 'card.s3db' database has been closed.
 ?[1;31m
 Start test 2?[0m
 DB file name: card.s3db
-SimpleBanking: an error occurred while trying to open / create the database 'card.s3db':
-[SQLITE_ERROR] SQL error or missing database (no such table: card)
-SimpleBanking: the 'card.s3db' database couldn't be opened / created.
-the application is about to quit.
+SimpleBanking: the 'card.s3db' database has been opened / created.
+That's all folks
+
+1. Create an account
+2. Log into account
+0. Exit
+&gt; 0
+Bye!
+SimpleBanking: the 'card.s3db' database has been closed.
 ?[1;31m
 Start test 3?[0m
 DB file name: card.s3db
-SimpleBanking: an error occurred while trying to open / create the database 'card.s3db':
-[SQLITE_ERROR] SQL error or missing database (no such table: card)
-SimpleBanking: the 'card.s3db' database couldn't be opened / created.
-the application is about to quit.
+SimpleBanking: the 'card.s3db' database has been opened / created.
+That's all folks
+
+1. Create an account
+2. Log into account
+0. Exit
+&gt; 0
+Bye!
+SimpleBanking: the 'card.s3db' database has been closed.
+?[1;31m
+Start test 4?[0m
+DB file name: card.s3db
+SimpleBanking: the 'card.s3db' database has been opened / created.
+That's all folks
+
+1. Create an account
+2. Log into account
+0. Exit
+&gt; 0
+Bye!
+SimpleBanking: the 'card.s3db' database has been closed.
+?[1;31m
+Start test 5?[0m
+DB file name: card.s3db
+SimpleBanking: the 'card.s3db' database has been opened / created.
+That's all folks
+
+1. Create an account
+2. Log into account
+0. Exit
+&gt; 1
+SimpleBanking: new card data has been added into the DB table 'card'
+
+Your card has been created
+Your card number:
+4000001925957987
+Your card PIN:
+6502
+
+1. Create an account
+2. Log into account
+0. Exit
+&gt; 1
+SimpleBanking: new card data has been added into the DB table 'card'
+
+Your card has been created
+Your card number:
+4000005604443961
+Your card PIN:
+1065
+
+1. Create an account
+2. Log into account
+0. Exit
+&gt; 1
+SimpleBanking: new card data has been added into the DB table 'card'
+
+Your card has been created
+Your card number:
+4000004790317550
+Your card PIN:
+3045
+
+1. Create an account
+2. Log into account
+0. Exit
+&gt; 1
+SimpleBanking: new card data has been added into the DB table 'card'
+
+Your card has been created
+Your card number:
+4000002845305273
+Your card PIN:
+0175
+
+1. Create an account
+2. Log into account
+0. Exit
+&gt; 0
+Bye!
+SimpleBanking: the 'card.s3db' database has been closed.
+?[1;31m
+Start test 6?[0m
+DB file name: card.s3db
+SimpleBanking: the 'card.s3db' database has been opened / created.
+id: 1, number: 4000001925957987, pin: 6502, balance = 0
+id: 2, number: 4000005604443961, pin: 1065, balance = 0
+id: 3, number: 4000004790317550, pin: 3045, balance = 0
+id: 4, number: 4000002845305273, pin: 0175, balance = 0
+That's all folks
+
+1. Create an account
+2. Log into account
+0. Exit
+&gt; 1
+SimpleBanking: new card data has been added into the DB table 'card'
+
+Your card has been created
+Your card number:
+4000005818137631
+Your card PIN:
+0680
+
+1. Create an account
+2. Log into account
+0. Exit
+&gt; 2
+
+Enter your card number:
+&gt; 4000005818137631
+Enter your PIN:
+&gt; 0680
+
+You have successfully logged in!
+
+1. Balance
+2. Log out
+0. Exit
+&gt; 0
+SimpleBanking: the 'card.s3db' database has been closed.
+?[1;31m
+Start test 7?[0m
+DB file name: card.s3db
+SimpleBanking: the 'card.s3db' database has been opened / created.
+id: 1, number: 4000001925957987, pin: 6502, balance = 0
+id: 2, number: 4000005604443961, pin: 1065, balance = 0
+id: 3, number: 4000004790317550, pin: 3045, balance = 0
+id: 4, number: 4000002845305273, pin: 0175, balance = 0
+id: 5, number: 4000005818137631, pin: 0680, balance = 0
+That's all folks
+
+1. Create an account
+2. Log into account
+0. Exit
+&gt; 1
+SimpleBanking: new card data has been added into the DB table 'card'
+
+Your card has been created
+Your card number:
+4000000129820777
+Your card PIN:
+9825
+
+1. Create an account
+2. Log into account
+0. Exit
+&gt; 2
+
+Enter your card number:
+&gt; 4000000129820777
+Enter your PIN:
+&gt; 5685
+
+Wrong card number or PIN!
+
+1. Create an account
+2. Log into account
+0. Exit
+&gt; 0
+Bye!
+SimpleBanking: the 'card.s3db' database has been closed.
+?[1;31m
+Start test 8?[0m
+DB file name: card.s3db
+SimpleBanking: the 'card.s3db' database has been opened / created.
+id: 1, number: 4000001925957987, pin: 6502, balance = 0
+id: 2, number: 4000005604443961, pin: 1065, balance = 0
+id: 3, number: 4000004790317550, pin: 3045, balance = 0
+id: 4, number: 4000002845305273, pin: 0175, balance = 0
+id: 5, number: 4000005818137631, pin: 0680, balance = 0
+id: 6, number: 4000000129820777, pin: 9825, balance = 0
+That's all folks
+
+1. Create an account
+2. Log into account
+0. Exit
+&gt; 1
+SimpleBanking: new card data has been added into the DB table 'card'
+
+Your card has been created
+Your card number:
+4000005954841780
+Your card PIN:
+1276
+
+1. Create an account
+2. Log into account
+0. Exit
+&gt; 2
+
+Enter your card number:
+&gt; 400000850162374
+Enter your PIN:
+&gt; 1276
+
+Wrong card number or PIN!
+
+1. Create an account
+2. Log into account
+0. Exit
+&gt; 0
+Bye!
+SimpleBanking: the 'card.s3db' database has been closed.
+?[1;31m
+Start test 9?[0m
+DB file name: card.s3db
+SimpleBanking: the 'card.s3db' database has been opened / created.
+id: 1, number: 4000001925957987, pin: 6502, balance = 0
+id: 2, number: 4000005604443961, pin: 1065, balance = 0
+id: 3, number: 4000004790317550, pin: 3045, balance = 0
+id: 4, number: 4000002845305273, pin: 0175, balance = 0
+id: 5, number: 4000005818137631, pin: 0680, balance = 0
+id: 6, number: 4000000129820777, pin: 9825, balance = 0
+id: 7, number: 4000005954841780, pin: 1276, balance = 0
+That's all folks
+
+1. Create an account
+2. Log into account
+0. Exit
+&gt; 1
+SimpleBanking: new card data has been added into the DB table 'card'
+
+Your card has been created
+Your card number:
+4000006704849073
+Your card PIN:
+8346
+
+1. Create an account
+2. Log into account
+0. Exit
+&gt; 2
+
+Enter your card number:
+&gt; 4000006704849073
+Enter your PIN:
+&gt; 8346
+
+You have successfully logged in!
+
+1. Balance
+2. Log out
+0. Exit
+&gt; 1
+
+Balance: 0
+
+1. Balance
+2. Log out
+0. Exit
+&gt; 0
+SimpleBanking: the 'card.s3db' database has been closed.
 </pre>
 </span>
 </div>
@@ -198,7 +377,7 @@ the application is about to quit.
 <input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
 </label>
 </div>Generated by 
-<a href="http://www.gradle.org">Gradle 5.3.1</a> at 15 cze 2020, 00:33:10</p>
+<a href="http://www.gradle.org">Gradle 5.3.1</a> at 15 cze 2020, 10:39:19</p>
 </div>
 </div>
 </body>

@@ -1,5 +1,11 @@
 package banking;
 
+/*
+ * The code in this file is not used anywhere
+ * there was some idea behind it, but it was abandoned
+ * I won't delete it because the idea may return in the future...
+ */
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;

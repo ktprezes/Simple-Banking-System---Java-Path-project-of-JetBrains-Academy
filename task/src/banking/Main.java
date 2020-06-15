@@ -31,8 +31,6 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
 
 
 public class Main implements AppConst, DBConst {
@@ -104,7 +102,7 @@ public class Main implements AppConst, DBConst {
         //        number  TEXT
         //        pin     TEXT
         //        balance INTEGER DEFAULT 0
-        if (!accDB.ensureTableCardStructure()) {
+        if (!accDB.prepareTableCardAndStatements()) {
             loggedIO.print(APP_NAME + ": the '" + dbFileName + "' database - some problem with 'card' table occurred."
                     + "\nthe application is about to quit.", DO_LOG);
             return; // quit the Application
