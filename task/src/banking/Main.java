@@ -50,7 +50,7 @@ public class Main implements AppConst, DBConst {
     // thus hat 'log' local variable became obsolete
     // static ArrayList<String> log = new ArrayList<>();
 
-//    static Map<String, Account> accounts = new HashMap<>();
+    //    static Map<String, Account> accounts = new HashMap<>();
     static String currAccNo = "";
 
     static APP_STATES state = APP_STATES.MAIN_LOOP;
@@ -167,7 +167,19 @@ public class Main implements AppConst, DBConst {
                                     processBalance(currAccNo);
                                     break;
 
-                                case "2": // logout - intentionally no break
+                                case "2": // add income
+                                    processAddIncome(currAccNo);
+                                    break;
+
+                                case "3": // do transer
+                                    processDoTransferFromAcc(currAccNo);
+                                    break;
+
+                                case "4": // close account
+                                    processCloseAcc(currAccNo);
+                                    break;
+
+                                case "5": // logout - intentionally no break
                                 default: // 'unknown command' - the same as 'logout'
                                     currAccNo = "";
                                     loggedIO.print("\nYou have successfully logged out!", DO_LOG);
@@ -237,7 +249,7 @@ public class Main implements AppConst, DBConst {
 
         Account newAcc = new Account();
 //        accounts.put(newAcc.getFullNoAsString(), newAcc);
-        if(accDB.addNewCard(newAcc.getFullNoAsString(), newAcc.getPinAsString())) {
+        if (accDB.addNewCard(newAcc.getFullNoAsString(), newAcc.getPinAsString())) {
             loggedIO.print("\nYour card has been created\nYour card number:", DO_LOG);
             loggedIO.print(newAcc.getFullNoAsString(), DO_LOG);
             loggedIO.print("Your card PIN:", DO_LOG);
@@ -263,18 +275,8 @@ public class Main implements AppConst, DBConst {
             loggedIO.print("\nWrong card number or PIN!", DO_LOG);
             return null;
         }
-/*
-        if (!accounts.containsKey(no)) {
-            loggedIO.print("\nWrong card number or PIN!", DO_LOG);
-            return null;
-        }
 
-        if (!accounts.get(no).getPinAsString().equals(pin)) {
-            loggedIO.print("\nWrong card number or PIN!", DO_LOG);
-            return null;
-        }
-*/
-        if(!accDB.containsAccNoAndPin(no, pin)) {
+        if (!accDB.containsAccNoAndPin(no, pin)) {
             loggedIO.print("\nWrong card number or PIN!", DO_LOG);
             return null;
         }
@@ -285,10 +287,10 @@ public class Main implements AppConst, DBConst {
 
 
     private static void processBalance(String acc) {
-        if(!Account.isValidSimpleBankingAccNumber(acc)){
+        if (!Account.isValidSimpleBankingAccNumber(acc)) {
             return;
         }
-        if (!accDB.containsAccNo(acc)){
+        if (!accDB.containsAccNo(acc)) {
             return;
         }
 
@@ -297,18 +299,92 @@ public class Main implements AppConst, DBConst {
     } // private static void processBalance()
 
 
+    private static void processAddIncome(String acc) {
+        if (!Account.isValidSimpleBankingAccNumber(acc)) {
+            loggedIO.print("\nWrong account number!", DO_LOG);
+            return;
+        }
+        if (!accDB.containsAccNo(acc)) {
+            loggedIO.print("\nThere is no such account in the database!", DO_LOG);
+            return;
+        }
+
+        // there is nothing about income validation in the stage#4 description
+        // so I do not do it!
+        loggedIO.print("\nEnter income:", DO_LOG);
+        int incomeVal = Integer.parseInt(loggedIO.read(DO_LOG).strip());
+        int oldBalance = accDB.getBalanceOfAccNo(acc);
+        accDB.setBalanceOfAccNo(oldBalance + incomeVal, acc);
+        loggedIO.print("Income was added!", DO_LOG);
+
+    } // private static void processAddIncome(String acc)
+
+
+    private static void processDoTransferFromAcc(String accFrom) {
+        if (!Account.isValidSimpleBankingAccNumber(accFrom)) {
+            loggedIO.print("\nWrong 'from' account number!", DO_LOG);
+            return;
+        }
+        if (!accDB.containsAccNo(accFrom)) {
+            loggedIO.print("\nThere is no such 'from' account in the database!", DO_LOG);
+            return;
+        }
+
+        loggedIO.print("\nTransfer\nEnter card number:", DO_LOG);
+        String accTo = loggedIO.read(DO_LOG);
+        if (!Account.isValidSimpleBankingAccNumber(accTo)) {
+            loggedIO.print("Probably you made mistake in the card number. Please try again!", DO_LOG);
+            return;
+        }
+        if (!accDB.containsAccNo(accTo)) {
+            loggedIO.print("Such a card does not exist.", DO_LOG);
+            return;
+        }
+
+        loggedIO.print("Enter how much money you want to transfer:", DO_LOG);
+        int amountToTransfer = Integer.parseInt(loggedIO.read(DO_LOG).strip());
+        int oldAccFromBalance = accDB.getBalanceOfAccNo(accFrom);
+
+        if (oldAccFromBalance < amountToTransfer) {
+            loggedIO.print("Not enough money!", DO_LOG);
+            return;
+        }
+
+        int oldAccToBalance = accDB.getBalanceOfAccNo(accTo);
+        accDB.setBalanceOfAccNo(oldAccFromBalance - amountToTransfer, accFrom);
+        accDB.setBalanceOfAccNo(oldAccToBalance + amountToTransfer, accTo);
+
+        loggedIO.print("Success!", DO_LOG);
+
+    } // private static void processDoTransferFromAcc(String accFrom)
+
+
+    private static void processCloseAcc(String accNo) {
+        if (!Account.isValidSimpleBankingAccNumber(accNo)) {
+            loggedIO.print("\nWrong account number!", DO_LOG);
+            return;
+        }
+        if (!accDB.containsAccNo(accNo)) {
+            loggedIO.print("\nThere is no such account in the database!", DO_LOG);
+            return;
+        }
+
+        accDB.deleteAccNo(accNo);
+        loggedIO.print("\nThe account has been closed!", DO_LOG);
+    } // private static void processCloseAcc(String accNo)
+
+
     // lists data of all stored accounts / cards
     //
     private static void processAccList() {
-/*
+
+/*  // commented-out is the stage#2 version
         loggedIO.print("Accounts stored in internal run-time list:", DO_LOG);
 
         for (Account acc : accounts.values()) {
             loggedIO.print(acc.toString(), DO_LOG);
         }
 */
-
-
         loggedIO.print("Accounts stored in the database:", DO_LOG);
         ResultSet rs = accDB.getAllCards();
         try {

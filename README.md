@@ -81,16 +81,14 @@ Stage start date: 2020-06-09
 
 CS/IT concepts to use:
 
-* CLI parameters utilization - eg. SQLite DB file name providing,
+* CLI parameters utilization - eg. providing SQLite DB file name ,
 * utilizing 'singleton' design  pattern - for new 'AccDataBase' class and for the 'Log' class refactored from single variable,
 * working with SQLite DB,
-* basic concepts of JPA (Java Persistent API): data source, connection etc.,
+* basic concepts of JPA (Java Persistent API): data source, connection, SQL statement,  prepared SQL statement, etc.,
 * basic of DDL (Data Definition Language): create DB / create table, drop db, drop table,
-* basics of SQL CRUD operations: 
+* some of basic SQL CRUD operations: 
   * select ... from ... where ... , 
   * insert into ... values ..., 
-  * update ... set ...,
-  * delete from ... where ...,
 
 <sub>[Top of page](#pgtop)<sub>
 
@@ -102,11 +100,19 @@ CS/IT concepts to use:
 
 Stage description [on JetBrains Academy site](https://hyperskill.org/projects/93/stages/518/implement) or [locally](./Advanced%20system/task.html)
 
-Stage start date: <not yet>
+Stage start date: 2020-06-15
 
 ### Stage goals
 
-* 
+* add more bank account-related operations: 
+  * add income,
+  * do transfer (to another account),
+  * close account,
+
+CS/IT concepts to use:
+
+* update ... set ...,
+* delete from ... where ...,
 
 <sub>[Top of page](#pgtop)<sub>
 

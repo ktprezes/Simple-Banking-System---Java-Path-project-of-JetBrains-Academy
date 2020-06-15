@@ -26,12 +26,15 @@ public interface AppConst { // constants regarding the application as a whole
 
     String MAIN_MENU_STR =
             "\n1. Create an account"
-                    + "\n2. Log into account"
-                    + "\n0. Exit";
+          + "\n2. Log into account"
+          + "\n0. Exit";
 
     String ACC_SUBMENU_STR =
             "\n1. Balance"
-                    + "\n2. Log out"
-                    + "\n0. Exit";
+          + "\n2. Add income"
+          + "\n3. Do transfer"
+          + "\n4. Close account"
+          + "\n5. Log out"
+          + "\n0. Exit";
 
 } // public interface AppConst

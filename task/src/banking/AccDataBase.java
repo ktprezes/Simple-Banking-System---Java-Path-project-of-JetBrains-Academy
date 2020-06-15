@@ -16,14 +16,17 @@ class AccDataBase implements DBConst {
     //
     static LoggedConsoleIO loggedIO = LoggedConsoleIO.getInstance();
 
-    private static AccDataBase accDB = null;
-    private static String dbFileName = null;
-    private static String dbUrl = null;
+    private static AccDataBase accDB     = null;
+    private static String dbFileName     = null;
+    private static String dbUrl          = null;
     private static Connection connection = null;
-    private static Statement sqlStmt = null;
-    private static PreparedStatement sqlPstmtNewCard = null;
-    private static PreparedStatement sqlPstmtQueryCardNoPin = null;
-    private static PreparedStatement sqlPstmtQueryCardNo = null;
+    private static Statement sqlStmt     = null;
+    private static PreparedStatement sqlPstmtNewCard           = null;
+    private static PreparedStatement sqlPstmtQueryCardNoPin    = null;
+    private static PreparedStatement sqlPstmtQueryCardNo       = null;
+    private static PreparedStatement sqlPstmtUpdateCardBalance = null;
+    private static PreparedStatement sqlPstmtDeleteCardno      = null;
+
 
 
     // private constructor (not publicly accessible)
@@ -128,9 +131,11 @@ class AccDataBase implements DBConst {
             // and these statements has to be invoked AFTER SQL_TABLE_CARD_CREATING_STRING executing
             // because they depend on the existence of the 'card' table
             //
-            sqlPstmtNewCard = connection.prepareStatement(SQL_TABLE_CARD_INSERT_NEW_CARD);
-            sqlPstmtQueryCardNoPin = connection.prepareStatement(SQL_TABLE_CARD_QUERY_CARD_BY_NUMBER_AND_PIN);
-            sqlPstmtQueryCardNo = connection.prepareStatement(SQL_TABLE_CARD_QUERY_CARD_BY_NUMBER);
+            sqlPstmtNewCard             = connection.prepareStatement(SQL_TABLE_CARD_INSERT_NEW_CARD);
+            sqlPstmtQueryCardNoPin      = connection.prepareStatement(SQL_TABLE_CARD_QUERY_CARD_BY_NUMBER_AND_PIN);
+            sqlPstmtQueryCardNo         = connection.prepareStatement(SQL_TABLE_CARD_QUERY_CARD_BY_NUMBER);
+            sqlPstmtUpdateCardBalance   = connection.prepareStatement(SQL_TABLE_CARD_UPDATE_CARD_NO_BALANCE);
+            sqlPstmtDeleteCardno        = connection.prepareStatement(SQL_TABLE_CARD_DELETE_CARD_NO);
 
             // if we got to this point, then probably everything is fine :)
             result = true;
@@ -262,6 +267,32 @@ class AccDataBase implements DBConst {
     } // int getBalanceOfAccNo(String no)
 
 
+    void setBalanceOfAccNo(int newBalance, String no) {
+        try {
+            sqlPstmtUpdateCardBalance.setInt(1,newBalance);
+            sqlPstmtUpdateCardBalance.setString(2,no);
+            sqlPstmtUpdateCardBalance.executeUpdate();
+        } catch(SQLException e){
+            loggedIO.print(APP_NAME + ": an error occurred while trying to set new balance =" + newBalance, DO_LOG);
+            loggedIO.print(APP_NAME + ": for the card no: " + no, DO_LOG);
+            loggedIO.print(e.getMessage(), DO_LOG);
+        }
+    } // void setBalanceOfAccNo(int newBalance, String no)
+
+
+    void deleteAccNo(String no) {
+        try {
+            sqlPstmtDeleteCardno.setString(1,no);
+            sqlPstmtDeleteCardno.executeUpdate();
+        } catch(SQLException e){
+            loggedIO.print(APP_NAME + ": an error occurred while trying to delete ", DO_LOG);
+            loggedIO.print(APP_NAME + ": the card no: " + no, DO_LOG);
+            loggedIO.print(e.getMessage(), DO_LOG);
+        }
+
+    } // void deleteAccNo(String no)
+
+
     // close existing database connection
     //
     void close() {
@@ -276,15 +307,17 @@ class AccDataBase implements DBConst {
             if (DEBUG_LVL > 0) {
                 loggedIO.print(APP_NAME + ": the '" + dbFileName + "' database has been closed.", DO_LOG);
             }
+            sqlPstmtDeleteCardno      = null;
+            sqlPstmtUpdateCardBalance = null;
+            sqlPstmtQueryCardNo       = null;
+            sqlPstmtQueryCardNoPin    = null;
+            sqlPstmtNewCard           = null;
             dbFileName = null;
-            sqlPstmtQueryCardNo = null;
-            sqlPstmtQueryCardNoPin = null;
-            sqlPstmtNewCard = null;
-            sqlStmt = null;
+            sqlStmt    = null;
             connection = null;
-            dbUrl = null;
-            accDB = null;
-        }
+            dbUrl      = null;
+            accDB      = null;
+        } // try {} catch(){} finally {}
     } // void close()
 
 } // class AccDataBase
